@@ -1,0 +1,103 @@
+---
+
+- name: Gather facts from all servers
+  hosts: all
+  tasks: []
+
+- name: Select one Kubernetes master for initial tasks
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Create hostgroup k8s_initial_master
+      add_host:
+        name: "{{ groups['masters'][0] }}"
+        groups: k8s_initial_master
+
+#
+# Install basic software
+#
+
+- import_playbook: init/main.yml
+
+#
+# Deploy core components and setup nodes
+#
+
+- import_playbook: core/nodes/main.yml
+
+#
+# Deploy Weave CNI plugin
+#
+
+- import_playbook: core/weave/main.yml
+
+#
+# Deploy CoreDNS
+#
+
+- import_playbook: core/coredns/main.yml
+
+#
+# Deploy Nginx INC. ingress controller
+#
+
+- import_playbook: core/ingress/main.yml
+
+#
+# Deploy Metrics Server
+#
+
+- import_playbook: core/metrics_server/main.yml
+
+- name: Restart masters kubelets
+  hosts: masters
+  serial: 1
+  tasks:
+    - name: Restart kubelet
+      systemd:
+        name: kubelet
+        state: restarted
+        enabled: yes
+        daemon_reload: yes
+    - name: Wait for kubeapi become ready
+      wait_for:
+        host: 127.0.0.1
+        port: 6443
+        timeout: 300
+        delay: 10
+    - name: Wait for scheduler become ready
+      wait_for:
+        host: 127.0.0.1
+        port: 10251
+        timeout: 300
+        delay: 10
+    - name: Wait for controller become ready
+      wait_for:
+        host: 127.0.0.1
+        port: 10252
+        timeout: 300
+        delay: 10
+    - name: Wait for kube-proxy become ready
+      wait_for:
+        host: 127.0.0.1
+        port: 10249
+        timeout: 300
+        delay: 10
+
+- name: Restart workers kubelets
+  hosts: nodes
+  serial: 1
+  tasks:
+    - name: Restart kubelet
+      systemd:
+        name: kubelet
+        state: restarted
+        enabled: yes
+        daemon_reload: yes
+    - name: Wait for kube-proxy become ready
+      wait_for:
+        host: 127.0.0.1
+        port: 10249
+        timeout: 300
+        delay: 10

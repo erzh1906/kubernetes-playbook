@@ -1,0 +1,6 @@
+---
+
+- name: Setup Nginx INC. ingress controller
+  hosts: k8s_initial_master
+  roles:
+    - ingress

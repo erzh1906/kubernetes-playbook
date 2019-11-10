@@ -1,0 +1,17 @@
+---
+
+- name: Upload kubelet-config.yml
+  template:
+    src: kubelet-config.yaml
+    dest: /var/lib/kubelet/kubelet-config.yaml
+  notify: restart kubelet
+  tags:
+    - k8s_master
+
+- name: Upload systemd configuration
+  template:
+    src: kubelet.service
+    dest: /etc/systemd/system/kubelet.service
+  notify: restart kubelet
+  tags:
+    - k8s_master

@@ -1,0 +1,49 @@
+################################################################
+##                                                            ##
+## GENERATED FROM ANSIBLE TEMPLATE                            ##
+## DO NOT EDIT DIRECTLY                                       ##
+## YOUR CHANGES WILL BE OVERWRITEN WHEN NEXT ANSIBLE TASK RUN ##
+##                                                            ##
+################################################################
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    k8s-app: kube-proxy
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-proxy
+    - --kubeconfig=/srv/kubernetes/kube-proxy.kubeconfig
+    - --proxy-mode=iptables
+    - --v=3
+    image: k8s.gcr.io/kube-proxy:v{{ kube_version }}
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10249
+        scheme: HTTP
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: kube-proxy
+    resources: {}
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /srv/kubernetes
+      name: srvkube
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  hostNetwork: true
+  securityContext: {}
+  volumes:
+  - hostPath:
+      path: /var/lib/kubernetes
+      type: ""
+    name: srvkube

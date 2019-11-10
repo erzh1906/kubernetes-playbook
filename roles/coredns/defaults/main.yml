@@ -1,0 +1,5 @@
+---
+
+coredns_version: 1.5.0
+workers_group_name: nodes
+coredns_service_ip: 172.30.0.10

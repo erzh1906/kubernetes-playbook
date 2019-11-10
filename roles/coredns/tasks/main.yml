@@ -1,0 +1,16 @@
+---
+
+- name: Upload CoreDNS manifest
+  template:
+    src: coredns.yaml
+    dest: /root/coredns.yaml
+    backup: yes
+  tags:
+    - coredns
+
+- name: Apply uploaded manifest
+  k8s:
+    src: /root/coredns.yaml
+    state: present
+  tags:
+    - coredns

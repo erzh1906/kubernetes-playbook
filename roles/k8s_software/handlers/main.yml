@@ -1,0 +1,8 @@
+---
+
+- name: reboot
+  reboot:
+    reboot_timeout: 180
+    test_command: whoami
+    msg: Reboot initiated by Ansible
+  

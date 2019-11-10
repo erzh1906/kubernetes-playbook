@@ -1,0 +1,53 @@
+---
+
+- name: Install epel-release
+  yum:
+    name: epel-release
+    state: present
+  tags:
+    - containerd
+    - containerd.install
+
+- name: Install containerd
+  yum:
+    name: containerd
+    state: present
+  tags:
+    - containerd
+    - containerd.install
+
+- name: Create systemd directory for containerd service
+  file:
+    path: /etc/systemd/system/containerd.service.d
+    state: directory
+  tags:
+    - containerd
+    - containerd.conf
+
+- name: Upload systemd modification
+  copy:
+    src: custom.conf
+    dest: /etc/systemd/system/containerd.service.d/custom.conf
+  notify: restart containerd
+  tags:
+    - containerd
+    - containerd.conf
+
+- name: Upload containerd configuration
+  template:
+    src: config.toml
+    dest: /etc/containerd/config.toml
+  notify: restart containerd
+  tags:
+    - containerd
+    - containerd.conf
+
+- name: Start and enable containerd
+  systemd:
+    name: containerd
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - containerd
+    - containerd.start

@@ -1,0 +1,16 @@
+---
+
+- name: Upload Weave manifest
+  template:
+    src: weave.yaml
+    dest: /root/weave.yaml
+    backup: yes
+  tags:
+    - weave
+
+- name: Apply uploaded manifest
+  k8s:
+    src: /root/weave.yaml
+    state: present
+  tags:
+    - weave

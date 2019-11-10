@@ -1,0 +1,6 @@
+---
+
+- name: Setup Kubernetes loadbalancers
+  hosts: loadbalancers
+  roles:
+    - k8s_nginx

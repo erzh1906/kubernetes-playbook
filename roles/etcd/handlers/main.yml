@@ -1,0 +1,8 @@
+---
+
+- name: restart etcd
+  systemd:
+    name: etcd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

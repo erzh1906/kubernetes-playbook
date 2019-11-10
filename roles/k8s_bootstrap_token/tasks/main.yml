@@ -1,0 +1,10 @@
+---
+
+- name: Deploy Kubernetes bootstrap token
+  template:
+    src: bootstrap.token
+    dest: /etc/ssl/kubernetes/bootstrap.token
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_bootstrap_token

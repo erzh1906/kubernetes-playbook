@@ -1,0 +1,27 @@
+---
+
+- name: Upload ClusterRole config
+  copy:
+    src: clusterrole.yaml
+    dest: /root/clusterrole.yaml
+    backup: yes
+  tags:
+    - k8s_apiserver_kubelet_rbac
+
+- name: Upload ClusterRoleBinding config
+  copy:
+    src: clusterrolebinding.yaml
+    dest: /root/clusterrolebinding.yaml
+    backup: yes
+  tags:
+    - k8s_apiserver_kubelet_rbac
+
+- name: Apply uploaded manifests
+  k8s:
+    src: "/root/{{ item }}"
+    state: present
+  loop:
+    - clusterrole.yaml
+    - clusterrolebinding.yaml
+  tags:
+    - k8s_apiserver_kubelet_rbac

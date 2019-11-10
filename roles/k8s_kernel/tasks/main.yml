@@ -1,0 +1,48 @@
+---
+
+- name: Load required modules
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - ip_vs
+    - ip_vs_rr
+    - ip_vs_wrr
+    - ip_vs_sh
+    - br_netfilter
+    - overlay
+  tags:
+    - kernel
+    - kernel.modprobe
+
+- name: Make modules permanent
+  lineinfile:
+    dest: /etc/modules-load.d/{{ item }}.conf
+    line: "{{ item }}"
+    create: yes
+  loop:
+    - ip_vs
+    - ip_vs_rr
+    - ip_vs_wrr
+    - ip_vs_sh
+    - br_netfilter
+    - overlay
+  tags:
+    - kernel
+    - kernel.modprobe
+
+- name: Set required kernel parameters
+  sysctl:
+    name: "{{ item }}"
+    value: 1
+    state: present
+    sysctl_file: /etc/sysctl.conf
+    sysctl_set: yes
+    reload: yes
+  loop:
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+    - net.ipv4.ip_forward
+  tags:
+    - kernel
+    - kernel.sysctl

@@ -1,0 +1,4 @@
+---
+
+- name: restart kubelet
+  include_tasks: restart_kubelet.yml

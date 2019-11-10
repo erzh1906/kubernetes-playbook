@@ -1,0 +1,46 @@
+---
+
+- name: Install ETCD
+  yum:
+    name: etcd
+    state: present
+  tags:
+    - etcd
+    - etcd.install
+
+- name: Upload ETCD configuration
+  template:
+    src: etcd.conf
+    dest: /etc/etcd/etcd.conf
+  notify: restart etcd
+  tags:
+    - etcd
+    - etcd.conf
+
+- name: Create systemd directory
+  file:
+    path: /etc/systemd/system/etcd.service.d
+    state: directory
+    mode: 0755
+  tags:
+    - etcd
+    - etcd.conf
+
+- name: Upload systemd modification
+  copy:
+    src: custom.conf
+    dest: /etc/systemd/system/etcd.service.d/custom.conf
+  notify: restart etcd
+  tags:
+    - etcd
+    - etcd.conf
+
+- name: Start and enable ETCD
+  systemd:
+    name: etcd
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - etcd
+    - etcd.start

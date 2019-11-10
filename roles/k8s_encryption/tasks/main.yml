@@ -1,0 +1,9 @@
+---
+
+- name: Upload encryption config
+  template:
+    src: encryption-config.yaml
+    dest: /var/lib/kubernetes/encryption-config.yaml
+    backup: yes
+  tags:
+    - k8s_encryption

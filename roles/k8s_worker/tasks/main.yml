@@ -1,0 +1,24 @@
+---
+
+- name: Upload manifest for Kubernetes Proxy
+  template:
+    src: kube-proxy.yaml
+    dest: /etc/kubernetes/manifests/kube-proxy.yaml
+  tags:
+    - k8s_worker
+
+- name: Upload kubelet-config.yml
+  template:
+    src: kubelet-config.yaml
+    dest: /var/lib/kubelet/kubelet-config.yaml
+  notify: restart kubelet
+  tags:
+    - k8s_worker
+
+- name: Upload systemd configuration
+  template:
+    src: kubelet.service
+    dest: /etc/systemd/system/kubelet.service
+  notify: restart kubelet
+  tags:
+    - k8s_worker

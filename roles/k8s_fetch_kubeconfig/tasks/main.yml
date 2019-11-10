@@ -1,0 +1,12 @@
+---
+
+- name: Fetch kubeconfigs
+  slurp:
+    src: "/var/lib/kubernetes/{{ item }}"
+  register: kubernetes_kubeconfigs
+  loop:
+    - bootstrap.kubeconfig
+    - kube-proxy.kubeconfig
+    - remote.kubeconfig
+  tags:
+    - k8s_fetch_kubeconfig

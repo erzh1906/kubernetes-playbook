@@ -1,0 +1,16 @@
+---
+
+- name: Generate kubeconfigs
+  hosts: masters
+  roles:
+    - k8s_generate_kubeconfig
+
+- name: Fetch kubeconfigs
+  hosts: k8s_initial_master
+  roles:
+    - k8s_fetch_kubeconfig
+
+- name: Deploy kubeconfigs
+  hosts: nodes
+  roles:
+    - k8s_deploy_kubeconfig

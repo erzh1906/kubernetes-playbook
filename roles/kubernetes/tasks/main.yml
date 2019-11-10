@@ -1,0 +1,80 @@
+---
+
+- name: Create group for pods runAsGroup securityContext
+  group:
+    name: kubegroup
+    gid: "{{ kube_gid }}"
+    state: present
+  tags:
+    - kubernetes
+    - kubernetes.install
+
+- name: Create user for pods runAsUser securityContext
+  user:
+    name: kubeuser
+    shell: /bin/bash
+    group: kubegroup
+    uid: "{{ kube_uid }}"
+  tags:
+    - kubernetes
+    - kubernetes.install
+
+- name: Create directories for Kubernetes
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /var/lib/kubelet
+    - /var/lib/kubernetes
+    - /root/.kube
+  tags:
+    - kubernetes
+    - kubernetes.install
+
+- name: Add kubernetes repository
+  copy:
+    src: kubernetes.repo
+    dest: /etc/yum.repos.d/kubernetes.repo
+  tags:
+    - kubernetes
+    - kubernetes.install
+
+- name: Install kubelet, kubectl and cri-tools
+  yum:
+    name:
+      - kubelet-{{ kube_version }}-0.x86_64
+      - kubectl-{{ kube_version }}-0.x86_64
+      - cri-tools
+    state: present
+  tags:
+    - kubernetes
+    - kubernetes.install
+
+- name: Install python packages for working with Kubernetes objects via Ansible
+  yum:
+    name:
+      - python2-openshift.noarch
+      - PyYAML.x86_64
+    state: present
+  tags:
+    - kubernetes
+    - kubernetes.install
+
+- name: Upload crictl configuration
+  template:
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+  tags:
+    - kubernetes
+    - kubernetes.conf
+
+- name: Start and enable kubelet
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - kubernetes
+    - kubernetes.start

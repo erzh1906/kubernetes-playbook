@@ -1,0 +1,22 @@
+---
+
+- name: Setup master nodes
+  hosts: masters
+  roles:
+    - k8s_master
+
+- name: Setup RBAC configuration for TLS bootstraping and API server to Kubelet connection
+  hosts: k8s_initial_master
+  roles:
+    - k8s_bootstrap_tls_rbac
+    - k8s_apiserver_kubelet_rbac
+
+- name: Setup worker nodes
+  hosts: nodes
+  roles:
+    - k8s_worker
+
+- name: Approve pendig Kubelet CSRs and label nodes
+  hosts: k8s_initial_master
+  roles:
+    - k8s_node_labels

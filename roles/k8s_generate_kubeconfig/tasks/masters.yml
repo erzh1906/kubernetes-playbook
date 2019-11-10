@@ -1,0 +1,24 @@
+---
+
+- name: Fetch Kubernetes masters certificates
+  slurp:
+    src: /etc/ssl/kubernetes/{{ ansible_nodename }}.crt
+  register: kubernetes_self_certificate
+  tags:
+    - k8s_generate_kubeconfig
+
+- name: Fetch Kubernetes masters keys
+  slurp:
+    src: /etc/ssl/kubernetes/{{ ansible_nodename }}.key
+  register: kubernetes_self_key
+  tags:
+    - k8s_generate_kubeconfig
+
+- name: Generate master kubeconfig
+  template:
+    src: master.kubeconfig
+    dest: "/var/lib/kubernetes/{{ ansible_nodename }}.kubeconfig"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_generate_kubeconfig

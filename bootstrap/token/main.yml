@@ -1,0 +1,6 @@
+---
+
+- name: Deploy bootstrap token
+  hosts: masters
+  roles:
+    - k8s_bootstrap_token

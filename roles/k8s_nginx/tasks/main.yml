@@ -1,0 +1,71 @@
+---
+
+- name: Add nginx repository
+  copy:
+    src: nginx.repo
+    dest: /etc/yum.repos.d/nginx.repo
+  tags:
+    - nginx
+    - nginx.install
+
+- name: Exclude nginx from epel repository
+  lineinfile:
+    path: /etc/yum.repos.d/epel.repo
+    insertbefore: '^\[epel-debuginfo\]'
+    line: 'exclude=nginx*'
+  tags:
+    - nginx
+    - nginx.install
+
+- name: Install nginx
+  yum:
+    name: nginx
+    state: present
+  tags:
+    - nginx
+    - nginx.install
+
+- name: Generate openssl dhparam
+  openssl_dhparam:
+    path: /etc/nginx/dhparam.pem
+    size: 2048
+  tags:
+    - nginx
+    - nginx.install
+
+- name: Upload nginx.conf
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+  tags:
+    - nginx
+    - nginx.conf
+
+- name: Create systemd directory
+  file:
+    path: /etc/systemd/system/nginx.service.d
+    state: directory
+    mode: 0755
+  tags:
+    - nginx
+    - nginx.conf
+
+- name: Upload systemd modification
+  copy:
+    src: custom.conf
+    dest: /etc/systemd/system/nginx.service.d/custom.conf
+  notify: restart nginx
+  tags:
+    - nginx
+    - nginx.conf
+
+- name: Start and enable Nginx
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - nginx
+    - nginx.start

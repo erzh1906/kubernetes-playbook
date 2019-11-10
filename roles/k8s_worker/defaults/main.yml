@@ -1,0 +1,4 @@
+---
+
+kube_version: 1.13.0
+coredns_service_ip: 172.30.0.10

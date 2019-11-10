@@ -1,0 +1,25 @@
+---
+
+- name: Fetch ETCD related certificates
+  slurp:
+    src: "/etc/ssl/kubernetes/{{ item }}"
+  register: etcd_certificates
+  loop:
+    - etcd/ca.crt
+    - etcd/ca.key
+    - etcd/ca.csr
+    - etcd/server.crt
+    - etcd/server.key
+    - etcd/server.csr
+    - etcd/peer.crt
+    - etcd/peer.key
+    - etcd/peer.csr
+    - etcd/healthcheck-client.crt
+    - etcd/healthcheck-client.key
+    - etcd/healthcheck-client.csr
+    - apiserver-etcd-client.crt
+    - apiserver-etcd-client.key
+    - apiserver-etcd-client.csr
+  tags:
+    - k8s_fetch_crt
+    - k8s_fetch_crt.etcd

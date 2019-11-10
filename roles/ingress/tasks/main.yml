@@ -1,0 +1,16 @@
+---
+
+- name: Upload Ingress manifest
+  template:
+    src: ingress.yaml
+    dest: /root/ingress.yaml
+    backup: yes
+  tags:
+    - ingress
+
+- name: Apply uploaded manifest
+  k8s:
+    src: /root/ingress.yaml
+    state: present
+  tags:
+    - ingress

@@ -1,0 +1,12 @@
+---
+
+- name: Generate and fetch certificates
+  hosts: k8s_initial_master
+  roles:
+    - k8s_generate_crt
+    - k8s_fetch_crt
+
+- name: Deploy certificates
+  hosts: kubernetes
+  roles:
+    - k8s_deploy_crt

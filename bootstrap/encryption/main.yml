@@ -1,0 +1,6 @@
+---
+
+- name: Deploy encryption key
+  hosts: masters
+  roles:
+    - k8s_encryption

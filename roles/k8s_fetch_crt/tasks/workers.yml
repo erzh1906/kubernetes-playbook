@@ -1,0 +1,28 @@
+---
+
+- name: Fetch Kubernetes workers certificates
+  slurp:
+    src: /etc/ssl/kubernetes/{{ item }}.crt
+  register: kubernetes_workers_certificates
+  loop: "{{ groups[workers_group_name] }}"
+  tags:
+    - k8s_fetch_crt
+    - k8s_fetch_crt.workers
+
+- name: Fetch Kubernetes workers keys
+  slurp:
+    src: /etc/ssl/kubernetes/{{ item }}.key
+  register: kubernetes_workers_keys
+  loop: "{{ groups[workers_group_name] }}"
+  tags:
+    - k8s_fetch_crt
+    - k8s_fetch_crt.workers
+
+- name: Fetch Kubernetes workers csrs
+  slurp:
+    src: /etc/ssl/kubernetes/{{ item }}.csr
+  register: kubernetes_workers_csrs
+  loop: "{{ groups[workers_group_name] }}"
+  tags:
+    - k8s_fetch_crt
+    - k8s_fetch_crt.workers

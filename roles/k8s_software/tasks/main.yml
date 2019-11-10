@@ -1,0 +1,55 @@
+---
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+  notify: reboot
+  tags:
+    - software
+
+- name: Remove firewalld package
+  yum:
+    name: firewalld
+    state: absent
+  tags:
+    - software
+
+- name: Install basic software
+  yum:
+    name:
+      - epel-release
+      - tmux
+      - vim
+      - curl
+      - wget
+      - bind-utils
+      - git
+      - bash-completion
+      - iotop
+      - strace
+      - psmisc
+    state: present
+  tags:
+    - software
+
+- name: Install chrony
+  yum:
+    name: chrony
+    state: present
+  tags:
+    - software
+
+- name: Start and enable chronyd
+  systemd:
+    name: chronyd
+    state: started
+    enabled: yes
+  tags:
+    - software
+
+- name: Set timezone
+  timezone:
+    name: Asia/Almaty
+  notify: reboot
+  tags:
+    - software

@@ -1,0 +1,6 @@
+---
+
+- name: Setup CoreOS ETCD
+  hosts: etcd
+  roles:
+    - etcd

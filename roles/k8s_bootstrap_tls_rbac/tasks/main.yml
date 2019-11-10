@@ -1,0 +1,16 @@
+---
+
+- name: Upload TLS bootstrap manifest
+  copy:
+    src: tls-bootstrap-rbac.yaml
+    dest: /root/tls-bootstrap-rbac.yaml
+    backup: yes
+  tags:
+    - k8s_bootstrap_tls_rbac
+
+- name: Apply uploaded manifest
+  k8s:
+    src: /root/tls-bootstrap-rbac.yaml
+    state: present
+  tags:
+    - k8s_bootstrap_tls_rbac

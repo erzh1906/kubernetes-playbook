@@ -1,0 +1,16 @@
+---
+
+- name: Upload Metrics Server manifest
+  template:
+    src: metrics-server.yaml
+    dest: /root/metrics-server.yaml
+    backup: yes
+  tags:
+    - k8s_metrics_server
+
+- name: Apply uploaded manifest
+  k8s:
+    src: /root/metrics-server.yaml
+    state: present
+  tags:
+    - k8s_metrics_server

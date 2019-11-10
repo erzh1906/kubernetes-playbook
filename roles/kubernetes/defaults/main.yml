@@ -1,0 +1,5 @@
+---
+
+kube_gid: 2000
+kube_uid: 2000
+kube_version: 1.13.0

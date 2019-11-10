@@ -1,0 +1,11 @@
+---
+
+- name: Deploy Kubernetes certificates
+  copy:
+    content: "{{ item.content | b64decode }}"
+    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    mode: 0644
+  loop: "{{ hostvars[groups['k8s_initial_master'][0]].kubernetes_certificates.results }}"
+  tags:
+    - k8s_deploy_crt
+    - k8s_deploy_crt.kubernetes

@@ -1,0 +1,25 @@
+---
+
+- name: Install python2-cryptography
+  yum:
+    name: python2-cryptography
+    state: present
+  tags:
+    - k8s_generate_crt
+
+- name: Create directory for certificates
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /etc/ssl/kubernetes
+    - /etc/ssl/kubernetes/etcd
+  tags:
+    - k8s_generate_crt
+
+- include: ca.yml
+- include: etcd.yml
+- include: frontproxy.yml
+- include: kubernetes.yml
+- include: kubelet.yml

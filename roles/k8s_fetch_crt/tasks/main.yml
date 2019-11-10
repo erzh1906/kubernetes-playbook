@@ -1,0 +1,7 @@
+---
+
+- include: etcd.yml
+- include: frontproxy.yml
+- include: kubernetes.yml
+- include: masters.yml
+- include: workers.yml
