@@ -7,6 +7,10 @@
 -   **Weave** CNI
 -   **CentOS 7** only
 
+## Architecture
+
+![architecture](arch.png)
+
 ## Quick Start
 
 To deploy the cluster you can use :
