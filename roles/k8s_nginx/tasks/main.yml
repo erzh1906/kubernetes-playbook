@@ -25,14 +25,6 @@
     - nginx
     - nginx.install
 
-- name: Generate openssl dhparam
-  openssl_dhparam:
-    path: /etc/nginx/dhparam.pem
-    size: 2048
-  tags:
-    - nginx
-    - nginx.install
-
 - name: Upload nginx.conf
   template:
     src: nginx.conf
