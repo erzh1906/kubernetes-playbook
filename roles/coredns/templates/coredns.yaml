@@ -56,6 +56,9 @@ data:
     .:53 {
         errors
         health
+        template ANY AAAA . {
+          rcode NXDOMAIN
+        }
         kubernetes cluster.local in-addr.arpa ip6.arpa {
           pods insecure
           upstream
@@ -69,7 +72,7 @@ data:
         loadbalance
     }
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: coredns
@@ -78,7 +81,7 @@ metadata:
     k8s-app: kube-dns
     kubernetes.io/name: "CoreDNS"
 spec:
-  replicas: {{ (groups[workers_group_name] | length)*8 }}
+  replicas: {{ (groups[workers_group_name] | length)*2 }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
