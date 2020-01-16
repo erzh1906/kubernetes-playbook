@@ -92,7 +92,7 @@ items:
       - kind: ServiceAccount
         name: weave-net
         namespace: kube-system
-  - apiVersion: extensions/v1beta1
+  - apiVersion: apps/v1
     kind: DaemonSet
     metadata:
       name: weave-net
@@ -101,6 +101,9 @@ items:
       namespace: kube-system
     spec:
       minReadySeconds: 5
+      selector:
+        matchLabels:
+          name: weave-net
       template:
         metadata:
           labels:
@@ -116,17 +119,16 @@ items:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: spec.nodeName
+                - name: WEAVE_PASSWORD
+                  value: {{ weave_password }}
+                - name: IPALLOC_RANGE
+                  value: {{ kube_pod_ip_range }}
               image: 'docker.io/weaveworks/weave-kube:{{ weave_version }}'
               readinessProbe:
                 httpGet:
                   host: 127.0.0.1
                   path: /status
                   port: 6784
-              env:
-                - name: WEAVE_PASSWORD
-                  value: {{ weave_password }}
-                - name: IPALLOC_RANGE
-                  value: {{ kube_pod_ip_range }}
               resources:
                 requests:
                   cpu: 10m
