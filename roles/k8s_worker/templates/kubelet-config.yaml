@@ -2,8 +2,6 @@ kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
 staticPodPath: "/etc/kubernetes/manifests"
 cgroupDriver: "systemd"
-SystemCgroups: "/systemd/system.slice"
-CgroupRoot: "/systemd/system.slice"
 authentication:
   anonymous:
     enabled: false
