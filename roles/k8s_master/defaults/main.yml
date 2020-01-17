@@ -3,4 +3,6 @@
 kube_version: 1.13.0
 etcd_group_name: etcd
 kube_service_cluster_ip_range: 172.30.0.0/24
+cluster_dns_type: coredns
 coredns_service_ip: 172.30.0.10
+nodelocaldns_ip: 169.254.25.10

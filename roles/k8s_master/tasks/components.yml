@@ -12,7 +12,7 @@
   tags:
     - k8s_master
 
-- name: Upload kube-scheduler configuration
+- name: Upload kube-scheduler.yaml
   copy:
     src: kube-scheduler.yaml
     dest: /var/lib/kubernetes/kube-scheduler.yaml

@@ -13,7 +13,7 @@ authorization:
   mode: Webhook
 clusterDomain: "cluster.local"
 clusterDNS:
-  - "{{ coredns_service_ip }}"
+  - "{{ cluster_dns_ip }}"
 runtimeRequestTimeout: "15m"
 tlsCertFile: "/etc/ssl/kubernetes/{{ ansible_nodename }}.crt"
 tlsPrivateKeyFile: "/etc/ssl/kubernetes/{{ ansible_nodename }}.key"

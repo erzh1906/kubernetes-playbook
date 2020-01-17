@@ -1,5 +1,16 @@
 ---
 
+- name: Define cluster_dns_ip
+  set_fact:
+    cluster_dns_ip: >-
+      {%- if cluster_dns_type == "coredns" -%}
+      {{ coredns_service_ip }}
+      {%- elif cluster_dns_type == "nodelocaldns" -%}
+      {{ nodelocaldns_ip }}
+      {%- else -%}
+      {{ coredns_service_ip }}
+      {%- endif -%}
+
 - name: Upload manifest for Kubernetes Proxy
   template:
     src: kube-proxy.yaml
