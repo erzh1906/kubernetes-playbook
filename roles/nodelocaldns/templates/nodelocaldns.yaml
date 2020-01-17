@@ -1,0 +1,159 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nodelocaldns
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nodelocaldns
+  namespace: kube-system
+  labels:
+    addonmanager.kubernetes.io/mode: EnsureExists
+data:
+  Corefile: |
+    cluster.local:53 {
+        errors
+        cache {
+            success 9984 30
+            denial 9984 5
+        }
+        reload
+        loop
+        bind {{ nodelocaldns_ip }}
+        forward . {{ coredns_service_ip }} {
+            force_tcp
+        }
+        prometheus :9253
+        health {{ nodelocaldns_ip }}:9254
+    }
+    in-addr.arpa:53 {
+        errors
+        cache 30
+        reload
+        loop
+        bind {{ nodelocaldns_ip }}
+        forward . {{ coredns_service_ip }} {
+            force_tcp
+        }
+        prometheus :9253
+    }
+    ip6.arpa:53 {
+        errors
+        cache 30
+        reload
+        loop
+        bind {{ nodelocaldns_ip }}
+        forward . {{ coredns_service_ip }} {
+            force_tcp
+        }
+        prometheus :9253
+    }
+    .:53 {
+        errors
+        cache 30
+        reload
+        loop
+        bind {{ nodelocaldns_ip }}
+        forward . /etc/resolv.conf
+        prometheus :9253
+    }
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nodelocaldns
+  namespace: kube-system
+  labels:
+    k8s-app: kube-dns
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  selector:
+    matchLabels:
+      k8s-app: nodelocaldns
+  template:
+    metadata:
+      labels:
+        k8s-app: nodelocaldns
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9253'
+    spec:
+      priorityClassName: system-cluster-critical
+      serviceAccountName: nodelocaldns
+      hostNetwork: true
+      dnsPolicy: Default  # Don't use cluster DNS.
+      tolerations:
+      - effect: NoSchedule
+        operator: "Exists"
+      - effect: NoExecute
+        operator: "Exists"
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      containers:
+      - name: node-cache
+        image: "gcr.io/google-containers/k8s-dns-node-cache:{{ nodelocaldns_version }}"
+        resources:
+          limits:
+            memory: 170Mi
+          requests:
+            cpu: 100m
+            memory: 170Mi
+        args: [ "-localip", "{{ nodelocaldns_ip }}", "-conf", "/etc/coredns/Corefile" ]
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 53
+          name: dns
+          protocol: UDP
+        - containerPort: 53
+          name: dns-tcp
+          protocol: TCP
+        - containerPort: 9253
+          name: metrics
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            host: {{ nodelocaldns_ip }}
+            path: /health
+            port: 9254
+            scheme: HTTP
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 10
+        readinessProbe:
+          httpGet:
+            host: {{ nodelocaldns_ip }}
+            path: /health
+            port: 9254
+            scheme: HTTP
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 10
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/coredns
+        - name: xtables-lock
+          mountPath: /run/xtables.lock
+      volumes:
+        - name: config-volume
+          configMap:
+            name: nodelocaldns
+            items:
+            - key: Corefile
+              path: Corefile
+        - name: xtables-lock
+          hostPath:
+            path: /run/xtables.lock
+            type: FileOrCreate
+      terminationGracePeriodSeconds: 0
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 20%
+    type: RollingUpdate
