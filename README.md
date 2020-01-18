@@ -4,8 +4,9 @@
 
 -   **Highly available** cluster
 -   **ContainerD** runtime
--   **Weave** CNI
+-   **Weave** or **Flannel vxlan** CNI
 -   **CentOS 7** only
+-   **Nginx INC** ingress controller
 
 ## Architecture
 
