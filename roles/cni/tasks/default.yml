@@ -1,0 +1,5 @@
+---
+
+- name: CNI plugin is not supported
+  debug:
+    msg: Selected CNI plugin is not supported

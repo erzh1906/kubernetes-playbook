@@ -34,6 +34,11 @@ spec:
     - --service-account-private-key-file=/etc/ssl/kubernetes/sa.key
     - --use-service-account-credentials=true
     - --v=3
+{% if kube_cni_type == "flannel" %}
+    - --allocate-node-cidrs=true
+    - --cluster-cidr={{ kube_pod_ip_range }}
+    - --node-cidr-mask-size=24
+{% endif %}
     image: k8s.gcr.io/kube-controller-manager:v{{ kube_version }}
     imagePullPolicy: IfNotPresent
     livenessProbe:

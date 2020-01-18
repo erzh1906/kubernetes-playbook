@@ -39,8 +39,10 @@ To deploy the cluster you can use :
   - `coredns_service_ip:` IP address of CoreDNS Kubernetes service. Default `172.30.0.10`
   - `coredns_version:` version of CoreDNS. Default `1.5.0`
   - `etcd_group_name:` inventory name of ETCD group. Default `etcd`
+  - `flannel_version:` version of Flannel CNI. Default `0.11.0`
   - `ingress_version:` version of Nginx INC. ingress controller. Default `1.4.6`
   - `kube_bootstrap_token:` Kubernetes bootstrap token. Default `a90d81632f0d19718e2d24ab1d4df117`
+  - `kube_cni_type:` type of CNI. Can be `weave` or `flannel`. Default `weave`
   - `kube_crt_country_name:` country name of certificate (C). Default `KZ`
   - `kube_crt_expire_date:` certificate expire date in ASN1 TIME format. Default `20291231235959Z`
   - `kube_crt_locality_name:` locality name of certificate (L). Default `Almaty`

@@ -1,6 +1,0 @@
----
-
-- name: Setup Weave CNI plugin
-  hosts: k8s_initial_master
-  roles:
-    - weave

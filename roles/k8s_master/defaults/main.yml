@@ -1,6 +1,8 @@
 ---
 
 kube_version: 1.13.0
+kube_cni_type: weave
+kube_pod_ip_range: 10.32.0.0/12
 etcd_group_name: etcd
 kube_service_cluster_ip_range: 172.30.0.0/24
 cluster_dns_type: coredns

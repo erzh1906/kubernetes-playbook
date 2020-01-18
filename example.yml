@@ -40,8 +40,10 @@ all:
     coredns_service_ip: 172.30.0.10
     coredns_version: 1.5.0
     etcd_group_name: etcd
+    flannel_version: 0.11.0
     ingress_version: 1.5.7
     kube_bootstrap_token: a90d81632f0d19718e2d24ab1d4df117
+    kube_cni_type: weave
     kube_crt_country_name: KZ
     kube_crt_expire_date: 20291231235959Z
     kube_crt_locality_name: Almaty

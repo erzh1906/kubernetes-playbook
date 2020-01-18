@@ -1,0 +1,6 @@
+---
+
+- name: Setup CNI plugin
+  hosts: k8s_initial_master
+  roles:
+    - cni

@@ -1,0 +1,10 @@
+---
+
+- name: Include tasks for selected CNI plugin
+  include_tasks: "{{ item }}"
+  vars:
+    params:
+      files:
+        - '{{ kube_cni_type }}.yml'
+        - default.yml
+  loop: "{{ q('first_found', params, errors='ignore') }}"
