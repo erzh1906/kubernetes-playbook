@@ -85,3 +85,9 @@
 #
 
 - import_playbook: core/metrics_server/main.yml
+
+#
+# Deploy NodeLocalDNS cache
+#
+
+- import_playbook: addons/nodelocaldns/main.yml
