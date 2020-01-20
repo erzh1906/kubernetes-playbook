@@ -78,6 +78,10 @@ spec:
     - mountPath: /etc/ssl
       name: etcssl
       readOnly: true
+    ports:
+    - containerPort: 6443
+      name: api
+      protocol: TCP
   dnsPolicy: ClusterFirst
   hostNetwork: true
   priorityClassName: system-cluster-critical

@@ -11,6 +11,8 @@ kind: Pod
 metadata:
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ""
+    prometheus.io/port: "10252"
+    prometheus.io/scrape: "true"
   labels:
     component: kube-scheduler
     tier: control-plane
@@ -42,6 +44,13 @@ spec:
     - mountPath: /srv/kubernetes
       name: srvkube
       readOnly: true
+    ports:
+    - containerPort: 10251
+      name: plain
+      protocol: TCP
+    - containerPort: 10259
+      name: secure
+      protocol: TCP
   dnsPolicy: ClusterFirst
   hostNetwork: true
   priorityClassName: system-cluster-critical
