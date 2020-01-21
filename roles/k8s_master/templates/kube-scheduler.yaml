@@ -11,7 +11,7 @@ kind: Pod
 metadata:
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ""
-    prometheus.io/port: "10252"
+    prometheus.io/port: "10251"
     prometheus.io/scrape: "true"
   labels:
     component: kube-scheduler
