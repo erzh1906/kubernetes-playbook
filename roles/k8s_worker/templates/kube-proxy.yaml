@@ -21,6 +21,7 @@ spec:
   containers:
   - command:
     - kube-proxy
+    - --metrics-bind-address=0.0.0.0
     - --kubeconfig=/srv/kubernetes/kube-proxy.kubeconfig
     - --proxy-mode=iptables
     - --v=3
