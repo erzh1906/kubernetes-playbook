@@ -1,0 +1,22 @@
+---
+
+- name: Enable Docker CE repository
+  yum_repository:
+    name: docker-ce-stable
+    description: "Docker CE Stable - $basearch"
+    file: docker-ce
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    gpgcheck: yes
+    enabled: yes
+  tags:
+    - containerd
+    - containerd.install
+
+- name: Install containerd
+  yum:
+    name: containerd.io-{{ containerd_ce_version }}.el7.x86_64
+    state: present
+  tags:
+    - containerd
+    - containerd.install

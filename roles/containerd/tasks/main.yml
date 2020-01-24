@@ -1,20 +1,13 @@
 ---
 
-- name: Install epel-release
-  yum:
-    name: epel-release
-    state: present
-  tags:
-    - containerd
-    - containerd.install
-
-- name: Install containerd
-  yum:
-    name: containerd
-    state: present
-  tags:
-    - containerd
-    - containerd.install
+- name: Include tasks for selected containerd repository
+  include_tasks: "{{ item }}"
+  vars:
+    params:
+      files:
+        - '{{ containerd_repository }}.yml'
+        - default.yml
+  loop: "{{ q('first_found', params, errors='ignore') }}"
 
 - name: Create systemd directory for containerd service
   file:
