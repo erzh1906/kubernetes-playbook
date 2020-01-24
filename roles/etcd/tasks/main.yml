@@ -20,10 +20,19 @@
     - etcd
     - etcd.install
 
-- name: Install ETCD
-  yum:
-    name: etcd
-    state: present
+- name: Get ETCD binaries
+  unarchive:
+    src: https://storage.googleapis.com/etcd/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz
+    dest: /usr/bin
+    extra_opts:
+    - --strip=1
+    - --wildcards
+    - '*/{{ item }}'
+    remote_src: yes
+  loop:
+    - etcd
+    - etcdctl
+  notify: restart etcd
   tags:
     - etcd
     - etcd.install
