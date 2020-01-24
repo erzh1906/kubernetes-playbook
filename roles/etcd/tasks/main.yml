@@ -1,5 +1,25 @@
 ---
 
+- name: Create ETCD user
+  user:
+    name: etcd
+    shell: /sbin/nologin
+    home: /var/lib/etcd
+  tags:
+    - etcd
+    - etcd.install
+
+- name: Create ETCD data directory
+  file:
+    path: /var/lib/etcd
+    state: directory
+    mode: 0755
+    owner: etcd
+    group: etcd
+  tags:
+    - etcd
+    - etcd.install
+
 - name: Install ETCD
   yum:
     name: etcd
