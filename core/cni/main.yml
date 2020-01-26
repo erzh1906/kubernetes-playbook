@@ -1,6 +1,6 @@
 ---
 
 - name: Setup CNI plugin
-  hosts: k8s_initial_master
+  hosts: all:&{{ masters_group_name }}[0]
   roles:
     - cni

@@ -4,16 +4,6 @@
   hosts: all
   tasks: []
 
-- name: Select one Kubernetes master for initial tasks
-  hosts: localhost
-  connection: local
-  gather_facts: no
-  tasks:
-    - name: Create hostgroup k8s_initial_master
-      add_host:
-        name: "{{ groups['masters'][0] }}"
-        groups: k8s_initial_master
-
 #
 # Install basic software
 #
