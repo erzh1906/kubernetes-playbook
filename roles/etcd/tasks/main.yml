@@ -9,13 +9,16 @@
     - etcd
     - etcd.install
 
-- name: Create ETCD data directory
+- name: Create ETCD configuration and data directories
   file:
-    path: /var/lib/etcd
+    path: "{{ item }}"
     state: directory
     mode: 0755
     owner: etcd
     group: etcd
+  loop:
+    - /var/lib/etcd
+    - /etc/etcd
   tags:
     - etcd
     - etcd.install
