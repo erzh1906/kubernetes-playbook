@@ -12,7 +12,7 @@
     - k8s_apiserver_kubelet_rbac
 
 - name: Setup worker nodes
-  hosts: nodes
+  hosts: all:&{{ workers_group_name }}
   roles:
     - k8s_worker
 
