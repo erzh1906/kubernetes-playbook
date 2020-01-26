@@ -51,7 +51,7 @@
 
 - name: Upload systemd unit file
   copy:
-    src: etcd.service
+    src: etcd-{{ etcd_version.split(".")[:2] | join(".") }}.service
     dest: /etc/systemd/system/etcd.service
   notify: restart etcd
   tags:

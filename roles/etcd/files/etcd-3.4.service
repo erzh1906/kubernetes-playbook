@@ -1,0 +1,26 @@
+################################################################
+##                                                            ##
+## GENERATED FROM ANSIBLE TEMPLATE                            ##
+## DO NOT EDIT DIRECTLY                                       ##
+## YOUR CHANGES WILL BE OVERWRITEN WHEN NEXT ANSIBLE TASK RUN ##
+##                                                            ##
+################################################################
+
+[Unit]
+Description=Etcd Server
+After=network.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+WorkingDirectory=/var/lib/etcd/
+EnvironmentFile=-/etc/etcd/etcd.conf
+User=etcd
+ExecStart=/bin/bash -c "GOMAXPROCS=$(nproc) /usr/bin/etcd"
+
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
