@@ -1,12 +1,19 @@
 ---
 
 - name: Basic servers setup
-  hosts: kubernetes
+  hosts: all:&{{ cluster_group_name }}
   roles:
     - k8s_software
 
-- name: Modify kernel for Kubernetes nodes. Install runtime and Kubernetes packages
-  hosts: masters,nodes
+- name: Modify kernel for Kubernetes master nodes. Install runtime and Kubernetes packages
+  hosts: all:&{{ masters_group_name }}
+  roles:
+    - k8s_kernel
+    - containerd
+    - kubernetes
+
+- name: Modify kernel for Kubernetes worker nodes. Install runtime and Kubernetes packages
+  hosts: all:&{{ workers_group_name }}
   roles:
     - k8s_kernel
     - containerd

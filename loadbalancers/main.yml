@@ -1,6 +1,6 @@
 ---
 
 - name: Setup Kubernetes loadbalancers
-  hosts: loadbalancers
+  hosts: all:&{{ loadbalancers_group_name }}
   roles:
     - k8s_nginx
