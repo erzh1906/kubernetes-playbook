@@ -5,6 +5,6 @@
     content: "{{ item.content | b64decode }}"
     dest: "/var/lib/kubernetes/{{ item.item }}"
     mode: 0644
-  loop: "{{ hostvars[groups['k8s_initial_master'][0]].kubernetes_kubeconfigs.results }}"
+  loop: "{{ hostvars[groups[masters_group_name][0]].kubernetes_kubeconfigs.results }}"
   tags:
     - k8s_deploy_kubeconfig

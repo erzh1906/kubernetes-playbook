@@ -5,7 +5,7 @@
     content: "{{ item.content | b64decode }}"
     dest: "/etc/ssl/kubernetes/{{ item.item }}.crt"
     mode: 0644
-  loop: "{{ hostvars[groups['k8s_initial_master'][0]].kubernetes_masters_certificates.results }}"
+  loop: "{{ hostvars[groups[masters_group_name][0]].kubernetes_masters_certificates.results }}"
   tags:
     - k8s_deploy_crt
     - k8s_deploy_crt.masters
@@ -15,7 +15,7 @@
     content: "{{ item.content | b64decode }}"
     dest: "/etc/ssl/kubernetes/{{ item.item }}.key"
     mode: 0644
-  loop: "{{ hostvars[groups['k8s_initial_master'][0]].kubernetes_masters_keys.results }}"
+  loop: "{{ hostvars[groups[masters_group_name][0]].kubernetes_masters_keys.results }}"
   tags:
     - k8s_deploy_crt
     - k8s_deploy_crt.masters
@@ -25,7 +25,7 @@
     content: "{{ item.content | b64decode }}"
     dest: "/etc/ssl/kubernetes/{{ item.item }}.csr"
     mode: 0644
-  loop: "{{ hostvars[groups['k8s_initial_master'][0]].kubernetes_masters_csrs.results }}"
+  loop: "{{ hostvars[groups[masters_group_name][0]].kubernetes_masters_csrs.results }}"
   tags:
     - k8s_deploy_crt
     - k8s_deploy_crt.masters

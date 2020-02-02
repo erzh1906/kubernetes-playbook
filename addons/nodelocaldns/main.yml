@@ -1,6 +1,6 @@
 ---
 
 - name: Setup NodeLocalDNS cache
-  hosts: k8s_initial_master
+  hosts: all:&{{ masters_group_name }}[0]
   roles:
     - nodelocaldns

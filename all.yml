@@ -1,0 +1,76 @@
+---
+
+all:
+  hosts:
+    control-01.test.cloud.aviata.team:
+      ansible_host: 49.12.5.175
+    control-02.test.cloud.aviata.team:
+      ansible_host: 195.201.233.188
+    control-03.test.cloud.aviata.team:
+      ansible_host: 49.12.5.135
+    lb.test.cloud.aviata.team:
+      ansible_host: 49.12.5.149
+    worker-01.test.cloud.aviata.team:
+      ansible_host: 49.12.5.172
+    worker-02.test.cloud.aviata.team:
+      ansible_host: 49.12.6.70
+  children:
+    kubernetes:
+      children:
+        loadbalancers:
+          hosts:
+            lb.test.cloud.aviata.team:
+        etcd:
+          hosts:
+            control-01.test.cloud.aviata.team:
+            control-02.test.cloud.aviata.team:
+            control-03.test.cloud.aviata.team:
+        masters:
+          hosts:
+            control-01.test.cloud.aviata.team:
+            control-02.test.cloud.aviata.team:
+            control-03.test.cloud.aviata.team:
+        nodes:
+          hosts:
+            worker-01.test.cloud.aviata.team:
+            worker-02.test.cloud.aviata.team:
+      vars:
+        cluster_dns_type: nodelocaldns
+        containerd_ce_version: 1.2.10-3.2
+        containerd_epel_version: 1.2.4-1
+        containerd_repository: docker-ce
+        coredns_service_ip: 172.30.0.10
+        coredns_version: 1.5.0
+        etcd_group_name: etcd
+        etcd_version: 3.4.0
+        flannel_version: 0.11.0
+        ingress_version: 1.4.6
+        kube_bootstrap_token: a90d81632f0d19718e2d24ab1d4df117
+        kube_cni_type: weave
+        kube_crt_country_name: KZ
+        kube_crt_expire_date: 20291231235959Z
+        kube_crt_locality_name: Almaty
+        kube_crt_organizational_unit_name: Kubernetes
+        kube_crt_organization_name: Aviata LLC
+        kube_crt_start_date: 20190101000001Z
+        kube_crt_state_or_province_name: Almaty
+        kube_encryption_key: "Aeb0eNp576qMFof+m2GsCW1Nti2gPeoJeNd5ca+2RYI="
+        kube_gid: 2000
+        kube_loadbalancer_fqdn: lb.test.cloud.aviata.team
+        kube_pod_ip_range: 10.32.0.0/12
+        kube_service_cluster_ip_range: 172.30.0.0/24
+        kube_service_ip: 172.30.0.1
+        kube_uid: 2000
+        kube_version: 1.13.12
+        loadbalancers_group_name: loadbalancers
+        masters_group_name: masters
+        metrics_server_version: 0.3.6
+        nodelocaldns_ip: 169.254.25.10
+        nodelocaldns_version: 1.15.5
+        weave_password: 06d3d0d67ca38a0925f7d2a7881d85ed5ff90173528f1daa7fa632ba832403ef5915cfbe2c87605c87209dc2eda1f2aa9e2fc9deb4a754904867eca1d5642b50cab144bbc1fc5be1d1868ccbe2ecac6c9aa13f9d8c4f6018e64c5156e95657c86c4fe4b365797bf9305caeb9a304c8b439ae7a3bd9730c4eaf64fd515cdd9b3c
+        weave_version: 2.5.1
+        workers_group_name: nodes
+  vars:
+    ansible_port: 22
+    ansible_ssh_user: root
+

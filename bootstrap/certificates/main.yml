@@ -1,12 +1,12 @@
 ---
 
 - name: Generate and fetch certificates
-  hosts: k8s_initial_master
+  hosts: all:&{{ masters_group_name }}[0]
   roles:
     - k8s_generate_crt
     - k8s_fetch_crt
 
 - name: Deploy certificates
-  hosts: kubernetes
+  hosts: all:&{{ cluster_group_name }}
   roles:
     - k8s_deploy_crt
