@@ -1,0 +1,69 @@
+---
+
+- name: Add getenvoy repository
+  yum_repository:
+    name: tetrate-getenvoy-stable
+    description: "Tetrate GetEnvoy - Stable"
+    file: tetrate-getenvoy
+    baseurl: https://tetrate.bintray.com/getenvoy-rpm/centos/$releasever/$basearch/stable/
+    gpgkey: https://getenvoy.io/gpg
+    gpgcheck: yes
+    enabled: yes
+  tags:
+    - envoy
+
+- name: Install envoy
+  yum:
+    name: getenvoy-envoy
+    state: present
+  tags:
+    - envoy
+
+- name: Create directories for Envoy
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /etc/envoy
+    - /var/log/envoy
+  tags:
+    - envoy
+
+- name: Upload envoy configuration
+  template:
+    src: envoy.yaml
+    dest: /etc/envoy/envoy.yaml
+  notify: restart envoy
+  tags:
+    - envoy
+
+- name: Create a symbolic links to /dev/stdout
+  file:
+    src: /dev/stdout
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    state: link
+  loop:
+    - /var/log/envoy/access.log
+    - /var/log/envoy/admin.log
+  tags:
+    - envoy
+
+- name: Upload systemd configuration for Envoy
+  copy:
+    src: envoy.service
+    dest: /etc/systemd/system/envoy.service
+  notify: restart envoy
+  tags:
+    - envoy
+
+- name: Start and enable envoy
+  systemd:
+    name: envoy
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - envoy

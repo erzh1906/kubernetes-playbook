@@ -3,5 +3,4 @@
 cluster_group_name: kubernetes
 masters_group_name: masters
 workers_group_name: nodes
-loadbalancers_group_name: loadbalancers
 etcd_group_name: etcd

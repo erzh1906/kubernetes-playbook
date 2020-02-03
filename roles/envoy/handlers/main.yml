@@ -1,0 +1,8 @@
+---
+
+- name: restart envoy
+  systemd:
+    name: envoy
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

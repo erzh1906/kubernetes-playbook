@@ -11,12 +11,6 @@
 - import_playbook: init/main.yml
 
 #
-# Setup loadbalancers
-# 
-
-- import_playbook: loadbalancers/main.yml
-
-#
 # Generate, fetch and deploy certificates
 #
 

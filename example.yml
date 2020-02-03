@@ -8,17 +8,11 @@ all:
     control-01.test.cloud.example.com:
     control-02.test.cloud.example.com:
     control-03.test.cloud.example.com:
-    lb-01.test.cloud.example.com:
-    lb-02.test.cloud.example.com:
     worker-01.test.cloud.example.com:
     worker-02.test.cloud.example.com:
   children:
     kubernetes:
       children:
-        loadbalancers:
-          hosts:
-            lb-01.test.cloud.example.com:
-            lb-02.test.cloud.example.com:
         etcd:
           hosts:
             etcd-01.test.cloud.example.com:
@@ -52,14 +46,12 @@ all:
     kube_crt_start_date: 20190101000001Z
     kube_crt_state_or_province_name: Almaty
     kube_encryption_key: "Aeb0eNp576qMFof+m2GsCW1Nti2gPeoJeNd5ca+2RYI="
-    kube_loadbalancer_fqdn: lb.test.cloud.example.com
     kube_pod_ip_range: 10.233.64.0/18
     kube_service_cluster_ip_range: 172.30.0.0/24
     kube_service_ip: 172.30.0.1
     kube_gid: 2000
     kube_uid: 2000
     kube_version: 1.13.12
-    loadbalancers_group_name: loadbalancers
     masters_group_name: masters
     metrics_server_version: 0.3.6
     nodelocaldns_ip: 169.254.25.10

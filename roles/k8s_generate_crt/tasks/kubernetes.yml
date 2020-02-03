@@ -7,27 +7,11 @@
     - k8s_generate_crt
     - k8s_generate_crt.kubernetes
 
-- name: Set kube_loadbalancers_ips
-  set_fact:
-    kube_loadbalancers_ips: "{{ groups[loadbalancers_group_name] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list }}"
-  tags:
-    - k8s_generate_crt
-    - k8s_generate_crt.kubernetes
-
 - name: Set kube_api_san_dns
   set_fact:
     kube_api_san_dns: "{{ item.value | map('regex_replace', '^(.*)$', 'DNS:\\1') | list }}"
   with_dict:
     kube_api_dns_names: "{{ groups[masters_group_name] }}"
-  tags:
-    - k8s_generate_crt
-    - k8s_generate_crt.kubernetes
-
-- name: Set kube_loadbalancers_san_dns
-  set_fact:
-    kube_loadbalancers_san_dns: "{{ item.value | map('regex_replace', '^(.*)$', 'DNS:\\1') | list }}"
-  with_dict:
-    kube_loadbalancers_dns_names: "{{ groups[loadbalancers_group_name] }}"
   tags:
     - k8s_generate_crt
     - k8s_generate_crt.kubernetes
@@ -41,18 +25,9 @@
     - k8s_generate_crt
     - k8s_generate_crt.kubernetes
 
-- name: Set kube_loadbalancers_san_ips
-  set_fact:
-    kube_loadbalancers_san_ips: "{{ item.value | map('regex_replace', '^(.*)$', 'IP:\\1') | list }}"
-  with_dict:
-    kube_loadbalancers_ips: "{{ kube_loadbalancers_ips }}"
-  tags:
-    - k8s_generate_crt
-    - k8s_generate_crt.kubernetes
-
 - name: Set kube_masters_san
   set_fact:
-    kube_masters_san: "{{ kube_api_san_dns + kube_loadbalancers_san_dns + ['DNS:kubernetes', 'DNS:kubernetes.default', 'DNS:kubernetes.default.svc', 'DNS:kubernetes.default.svc.cluster', 'DNS:kubernetes.default.svc.cluster.local', 'DNS:{{ kube_loadbalancer_fqdn }}'] + kube_api_san_ips + kube_loadbalancers_san_ips + ['IP:127.0.0.1', 'IP:{{ kube_service_ip }}'] }}"
+    kube_masters_san: "{{ kube_api_san_dns + ['DNS:kubernetes', 'DNS:kubernetes.default', 'DNS:kubernetes.default.svc', 'DNS:kubernetes.default.svc.cluster', 'DNS:kubernetes.default.svc.cluster.local'] + kube_api_san_ips + ['IP:127.0.0.1', 'IP:{{ kube_service_ip }}'] }}"
   tags:
     - k8s_generate_crt
     - k8s_generate_crt.kubernetes
