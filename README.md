@@ -30,7 +30,6 @@ To deploy the cluster you can use :
   - Ansible 2.8
   - You need servers with at least 4 CPUs for ETCD nodes
   - All your nodes should have valid FQDNs as defined in inventory file
-  - You need to have valid FQDN for `kube_loadbalancer_fqdn` variable
 
 **Certificates variables:**
 
@@ -62,7 +61,6 @@ To deploy the cluster you can use :
 **Inventory related variables:**
 
   - `etcd_group_name:` inventory name of ETCD group. Default `etcd`
-  - `loadbalancers_group_name:` inventory name of Kubernetes loadbalancers group. Default `loadbalancers`
   - `masters_group_name:` inventory name of Kubernetes masters group. Default `masters`
   - `workers_group_name:` inventory name of Kubernetes workers group. Default `nodes`
 
@@ -71,7 +69,6 @@ To deploy the cluster you can use :
 
   - `kube_bootstrap_token:` Kubernetes bootstrap token. Default `a90d81632f0d19718e2d24ab1d4df117`
   - `kube_encryption_key:` Kubernetes encryption key. Default `"Aeb0eNp576qMFof+m2GsCW1Nti2gPeoJeNd5ca+2RYI="`
-  - `kube_loadbalancer_fqdn:` loadbalancer FQDN name. Default `lb.cloud.example.com`
   - `kube_service_ip:` IP address of Kubernetes service. Default `172.30.0.1`
   - `kube_gid:` Linux group ID for pods runAsGroup securityContext. Default `2000`
   - `kube_uid:` Linux user ID for pods runAsUser securityContext. Default `2000`
