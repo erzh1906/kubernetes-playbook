@@ -11,7 +11,7 @@
     - k8s_kernel
     - containerd
     - kubernetes
-    - envoy
+    - k8s_nginx
 
 - name: Modify kernel for Kubernetes worker nodes. Install runtime and Kubernetes packages
   hosts: all:&{{ workers_group_name }}
@@ -19,4 +19,4 @@
     - k8s_kernel
     - containerd
     - kubernetes
-    - envoy
+    - k8s_nginx
