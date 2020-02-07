@@ -111,7 +111,7 @@ spec:
             memory: 170Mi
           requests:
             cpu: 100m
-            memory: 70Mi
+            memory: 170Mi
         args: [ "-conf", "/etc/coredns/Corefile" ]
         volumeMounts:
         - name: config-volume
