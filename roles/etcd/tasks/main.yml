@@ -1,5 +1,25 @@
 ---
 
+- name: Deploy CA certificates
+  copy:
+    content: "{{ item.content | b64decode }}"
+    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    mode: 0644
+  loop: "{{ hostvars[groups[masters_group_name][0]].k8s_ca_certificates.results }}"
+  tags:
+    - etcd
+    - etcd.certificates
+
+- name: Deploy ETCD certificates
+  copy:
+    content: "{{ item.content | b64decode }}"
+    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    mode: 0644
+  loop: "{{ hostvars[groups[masters_group_name][0]].etcd_certificates.results }}"
+  tags:
+    - etcd
+    - etcd.certificates
+
 - name: Create ETCD user
   user:
     name: etcd

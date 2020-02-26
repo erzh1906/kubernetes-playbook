@@ -1,0 +1,63 @@
+---
+
+- name: Generate private keys for frontproxy related certificates
+  openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ item }}"
+    size: 2048
+    mode: 0644
+    backup: yes
+  loop:
+    - front-proxy-client.key
+  tags:
+    - k8s_frontproxy_crt
+
+- name: Generate CSR for frontproxy client certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/front-proxy-client.csr
+    privatekey_path: /etc/ssl/kubernetes/front-proxy-client.key
+    common_name: front-proxy-client
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "{{ kube_crt_organization_name }}"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - clientAuth
+    use_common_name_for_san: no
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_frontproxy_crt
+
+- name: Generate certificate for frontproxy client
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/front-proxy-client.crt
+    privatekey_path: /etc/ssl/kubernetes/front-proxy-client.key
+    csr_path: /etc/ssl/kubernetes/front-proxy-client.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/front-proxy-ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/front-proxy-ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_frontproxy_crt
+
+- name: Fetch frontproxy related certificates
+  slurp:
+    src: "/etc/ssl/kubernetes/{{ item }}"
+  register: frontproxy_certificates
+  loop:
+    - front-proxy-client.crt
+    - front-proxy-client.key
+    - front-proxy-client.csr
+  tags:
+    - k8s_frontproxy_crt
