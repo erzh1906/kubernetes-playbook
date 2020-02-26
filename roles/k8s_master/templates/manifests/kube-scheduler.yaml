@@ -11,51 +11,54 @@ kind: Pod
 metadata:
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ""
-    prometheus.io/port: "10249"
+    kubernetes.certificate.start.date: "{{ kube_crt_start_date }}"
+    kubernetes.certificate.expire.date: "{{ kube_crt_expire_date }}"
+    prometheus.io/port: "10251"
     prometheus.io/scrape: "true"
   labels:
-    k8s-app: kube-proxy
-  name: kube-proxy
+    component: kube-scheduler
+    tier: control-plane
+  name: kube-scheduler
   namespace: kube-system
 spec:
   containers:
   - command:
-    - kube-proxy
-    - --metrics-bind-address=0.0.0.0
-    - --kubeconfig=/srv/kubernetes/kube-proxy.kubeconfig
-    - --proxy-mode=iptables
+    - kube-scheduler
+    - --config=/srv/kubernetes/kube-scheduler.yaml
+    - --leader-elect=true
     - --v=3
-    image: k8s.gcr.io/kube-proxy:v{{ kube_version }}
+    image: k8s.gcr.io/kube-scheduler:v{{ kube_version }}
     imagePullPolicy: IfNotPresent
     livenessProbe:
-      failureThreshold: 3
+      failureThreshold: 8
       httpGet:
         host: 127.0.0.1
         path: /healthz
-        port: 10256
+        port: 10251
         scheme: HTTP
       initialDelaySeconds: 15
       timeoutSeconds: 15
-    name: kube-proxy
-    resources: {}
-    securityContext:
-      privileged: true
+    name: kube-scheduler
+    resources:
+      requests:
+        cpu: 100m
     volumeMounts:
     - mountPath: /srv/kubernetes
       name: srvkube
       readOnly: true
     ports:
-    - containerPort: 10249
-      name: metrics
+    - containerPort: 10251
+      name: plain
       protocol: TCP
-    - containerPort: 10256
-      name: health
+    - containerPort: 10259
+      name: secure
       protocol: TCP
   dnsPolicy: ClusterFirst
   hostNetwork: true
+  priorityClassName: system-cluster-critical
   securityContext: {}
   volumes:
   - hostPath:
       path: /var/lib/kubernetes
-      type: ""
+      type: "DirectoryOrCreate"
     name: srvkube

@@ -11,6 +11,8 @@ kind: Pod
 metadata:
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ""
+    kubernetes.certificate.start.date: "{{ kube_crt_start_date }}"
+    kubernetes.certificate.expire.date: "{{ kube_crt_expire_date }}"
     prometheus.io/port: "10249"
     prometheus.io/scrape: "true"
   labels:
