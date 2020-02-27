@@ -1,6 +1,6 @@
 ---
 
 - name: Setup CoreOS ETCD
-  hosts: all:&{{ etcd_group_name }}
+  hosts: "{{ groups[etcd_group_name] }}"
   roles:
     - etcd

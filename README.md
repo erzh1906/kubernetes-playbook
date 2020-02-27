@@ -23,8 +23,8 @@ To deploy the cluster you can use :
     # Deploy your cluster
     ansible-playbook -i example.yml deploy_cluster.yml -e @extra_vars_example.yml
 
-    # Upgrade your cluster
-    ansible-playbook -i example.yml cluster_upgrade.yml
+    # Scale up worker nodes
+    ansible-playbook -i example.yml scaleup_workers.yml -e @extra_vars_example.yml
 
 **Requirements:**
   - Ansible 2.8
@@ -83,6 +83,3 @@ To deploy the cluster you can use :
   - You should generate `kube_encryption_key` by `head -c 32 /dev/urandom | base64` command
   - You should generate `weave_password` by `openssl rand -hex 128` command
   - Tested only on DigitalOcean droplets
-
-**WARNINGS:**
-  - Don't run `cluster_upgrade.yml` for major Kubernetes upgrades

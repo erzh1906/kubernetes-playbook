@@ -11,10 +11,11 @@
 - import_playbook: init/main.yml
 
 #
-# Generate, fetch and deploy certificates
+# Generate and fetch certificates
 #
 
-- import_playbook: bootstrap/certificates/main.yml
+- import_playbook: bootstrap/certificates/generate.yml
+- import_playbook: bootstrap/certificates/fetch.yml
 
 #
 # Deploy bootstrap token
@@ -38,7 +39,9 @@
 # Deploy core components and setup Kubernetes nodes
 #
 
-- import_playbook: core/nodes/main.yml
+- import_playbook: core/nodes/masters.yml
+- import_playbook: core/nodes/workers.yml
+- import_playbook: core/nodes/labels.yml
 
 #
 # Deploy CNI plugin
@@ -62,7 +65,7 @@
 # Deploy Metrics Server
 #
 
-- import_playbook: core/metrics_server/main.yml
+- import_playbook: addons/metrics_server/main.yml
 
 #
 # Deploy NodeLocalDNS cache

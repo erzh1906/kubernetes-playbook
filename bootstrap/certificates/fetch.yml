@@ -1,6 +1,6 @@
 ---
 
-- name: Setup CoreDNS
+- name: Generate certificates
   hosts: "{{ groups[masters_group_name][0] }}"
   roles:
-    - coredns
+    - k8s_fetch_crt

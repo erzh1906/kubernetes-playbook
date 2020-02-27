@@ -4,30 +4,21 @@
   hosts: all
   tasks: []
 
-- name: Basic servers setup
-  hosts: "{{ groups[workers_group_name] + groups[masters_group_name] + groups[etcd_group_name]}}"
-  roles:
-    - k8s_software
+#
+# Install basic software on all servers in cluster and prepare Kubernetes nodes
+#
 
-- name: Modify kernel, install runtime and Kubernetes packages on Kubernetes nodes
-  hosts: "{{ groups[workers_group_name] + groups[masters_group_name] }}"
-  roles:
-    - k8s_kernel
-    - containerd
-    - kubernetes
-    - k8s_nginx
+- import_playbook: init/main.yml
 
-- name: Generate and fetch certificates
-  hosts: all:&{{ masters_group_name }}[0]
-  roles:
-    - k8s_fetch_crt
+#
+# Fetch certificates
+#
 
-- name: Setup worker nodes
-  hosts: all:&{{ workers_group_name }}
-  roles:
-    - k8s_worker
+- import_playbook: bootstrap/certificates/fetch.yml
 
-- name: Approve pendig Kubelet CSRs and label nodes
-  hosts: all:&{{ masters_group_name }}[0]
-  roles:
-    - k8s_node_labels
+#
+# Deploy core components and setup Kubernetes nodes
+#
+
+- import_playbook: core/nodes/workers.yml
+- import_playbook: core/nodes/labels.yml

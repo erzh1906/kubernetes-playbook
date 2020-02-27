@@ -1,0 +1,12 @@
+---
+
+- name: Setup master nodes
+  hosts: "{{ groups[masters_group_name] }}"
+  roles:
+    - k8s_master
+
+- name: Setup RBAC configuration for TLS bootstraping and API server to Kubelet connection
+  hosts: "{{ groups[masters_group_name][0] }}"
+  roles:
+    - k8s_bootstrap_tls_rbac
+    - k8s_apiserver_kubelet_rbac
