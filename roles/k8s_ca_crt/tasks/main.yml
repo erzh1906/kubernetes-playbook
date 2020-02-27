@@ -77,22 +77,3 @@
     privatekey_path: /etc/ssl/kubernetes/sa.key
   tags:
     - k8s_ca_crt
-
-- name: Fetch generated certificates and key
-  slurp:
-    src: "/etc/ssl/kubernetes/{{ item }}"
-  register: k8s_ca_certificates
-  loop:
-    - ca.crt
-    - ca.csr
-    - ca.key
-    - front-proxy-ca.crt
-    - front-proxy-ca.key
-    - front-proxy-ca.csr
-    - sa.crt
-    - sa.key
-    - etcd/ca.crt
-    - etcd/ca.key
-    - etcd/ca.csr
-  tags:
-    - k8s_ca_crt

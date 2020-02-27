@@ -7,7 +7,3 @@ kube_crt_organizational_unit_name: Kubernetes
 kube_crt_state_or_province_name: Almaty
 kube_crt_start_date: 20190101000001Z
 kube_crt_expire_date: 20291231235959Z
-kube_service_ip: 172.30.0.1
-etcd_group_name: etcd
-masters_group_name: masters
-workers_group_name: nodes

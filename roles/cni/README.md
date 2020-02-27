@@ -10,4 +10,4 @@
 
 **Notes:**
 
-  - You should generate password by `openssl rand -hex 128` command
+  - You should generate weave password by `openssl rand -hex 128` command
