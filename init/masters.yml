@@ -1,0 +1,9 @@
+---
+
+- name: Modify kernel for Kubernetes master nodes. Install runtime and Kubernetes packages
+  hosts: all:&{{ masters_group_name }}
+  roles:
+    - k8s_kernel
+    - containerd
+    - kubernetes
+    - k8s_nginx

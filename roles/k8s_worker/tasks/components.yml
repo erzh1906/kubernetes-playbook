@@ -2,7 +2,7 @@
 
 - name: Upload manifest for Kubernetes Proxy
   template:
-    src: kube-proxy.yaml
+    src: manifests/kube-proxy.yaml
     dest: /etc/kubernetes/manifests/kube-proxy.yaml
   tags:
     - k8s_worker

@@ -5,7 +5,7 @@
   tasks: []
 
 #
-# Install basic software
+# Install basic software on all servers in cluster and prepare Kubernetes nodes
 #
 
 - import_playbook: init/main.yml
@@ -29,25 +29,19 @@
 - import_playbook: bootstrap/encryption/main.yml
 
 #
-# Generate, fetch and deploy kubeconfig
-#
-
-- import_playbook: bootstrap/kubeconfigs/main.yml
-
-#
 # Setup CoreOS ETCD 
 #
 
 - import_playbook: etcd/main.yml
 
 #
-# Deploy core components and setup nodes
+# Deploy core components and setup Kubernetes nodes
 #
 
 - import_playbook: core/nodes/main.yml
 
 #
-# Deploy Weave CNI plugin
+# Deploy CNI plugin
 #
 
 - import_playbook: core/cni/main.yml

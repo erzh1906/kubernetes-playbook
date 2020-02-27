@@ -51,7 +51,7 @@
 
 - name: Set kube_masters_san
   set_fact:
-    kube_masters_san: "{{ kube_api_san_dns + ['DNS:kubernetes', 'DNS:kubernetes.default', 'DNS:kubernetes.default.svc', 'DNS:kubernetes.default.svc.cluster', 'DNS:kubernetes.default.svc.cluster.local'] + kube_api_san_ips + ['IP:127.0.0.1', 'IP:{{ kube_service_ip }}'] }}"
+    kube_masters_san: "{{ kube_api_san_dns + ['DNS:kubernetes', 'DNS:kubernetes.default', 'DNS:kubernetes.default.svc', 'DNS:kubernetes.default.svc.cluster', 'DNS:kubernetes.default.svc.cluster.local'] + kube_api_san_ips + ['IP:127.0.0.1', 'IP:' + kube_service_ip] }}"
   tags:
     - k8s_master
 
@@ -317,7 +317,7 @@
   tags:
     - k8s_master
 
-- name: Generate private keys for kubelet
+- name: Generate private key for kubelet
   openssl_privatekey:
     path: "/etc/ssl/kubernetes/{{ ansible_nodename }}.key"
     size: 2048
@@ -352,3 +352,19 @@
     backup: yes
   tags:
     - k8s_master
+
+- name: Generate certificate for kubelet
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/{{ ansible_nodename }}.crt
+    privatekey_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.key
+    csr_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  loop: "{{ groups[masters_group_name] }}"
+  tags:
+    - k8s_worker

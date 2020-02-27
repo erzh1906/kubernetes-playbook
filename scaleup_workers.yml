@@ -1,0 +1,33 @@
+---
+
+- name: Gather facts from all servers
+  hosts: all
+  tasks: []
+
+- name: Basic servers setup
+  hosts: "{{ groups[workers_group_name] + groups[masters_group_name] + groups[etcd_group_name]}}"
+  roles:
+    - k8s_software
+
+- name: Modify kernel, install runtime and Kubernetes packages on Kubernetes nodes
+  hosts: "{{ groups[workers_group_name] + groups[masters_group_name] }}"
+  roles:
+    - k8s_kernel
+    - containerd
+    - kubernetes
+    - k8s_nginx
+
+- name: Generate and fetch certificates
+  hosts: all:&{{ masters_group_name }}[0]
+  roles:
+    - k8s_fetch_crt
+
+- name: Setup worker nodes
+  hosts: all:&{{ workers_group_name }}
+  roles:
+    - k8s_worker
+
+- name: Approve pendig Kubelet CSRs and label nodes
+  hosts: all:&{{ masters_group_name }}[0]
+  roles:
+    - k8s_node_labels
