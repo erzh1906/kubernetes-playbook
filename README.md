@@ -87,4 +87,4 @@
   - You should generate `kube_bootstrap_token` by `head -c 16 /dev/urandom | od -An -t x | tr -d ' '` command
   - You should generate `kube_encryption_key` by `head -c 32 /dev/urandom | base64` command
   - You should generate `weave_password` by `openssl rand -hex 128` command
-  - Tested only on DigitalOcean droplets
+  - Tested only on DigitalOcean droplets and AWS EC2
