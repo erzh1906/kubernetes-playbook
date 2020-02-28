@@ -27,7 +27,7 @@
     - containerd.conf
 
 - name: Upload containerd configuration
-  template:
+  copy:
     src: config.toml
     dest: /etc/containerd/config.toml
   notify: restart containerd
