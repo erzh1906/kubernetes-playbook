@@ -1,0 +1,5 @@
+---
+
+masters_group_name: tag_group_control
+workers_group_name: tag_group_worker
+etcd_group_name: tag_group_control

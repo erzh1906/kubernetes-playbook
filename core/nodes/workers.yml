@@ -1,7 +1,7 @@
 ---
 
 - name: Setup worker nodes
-  hosts: "{{ groups[workers_group_name][0] }}"
+  hosts: "{{ groups[workers_group_name] }}"
   roles:
     - k8s_worker
 

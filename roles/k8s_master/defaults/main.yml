@@ -10,7 +10,7 @@ kube_crt_expire_date: 20291231235959Z
 kube_service_ip: 172.30.0.1
 etcd_group_name: etcd
 masters_group_name: masters
-kube_version: 1.13.0
+kube_version: 1.13.12
 kube_cni_type: weave
 kube_pod_ip_range: 10.32.0.0/12
 kube_service_cluster_ip_range: 172.30.0.0/24

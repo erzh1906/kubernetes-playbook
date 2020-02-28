@@ -116,6 +116,5 @@
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644
     backup: yes
-  loop: "{{ groups[masters_group_name] }}"
   tags:
     - k8s_worker

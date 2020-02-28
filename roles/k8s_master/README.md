@@ -13,7 +13,7 @@
   - `kube_service_ip:` IP address of Kubernetes service. Default `172.30.0.1`
   - `etcd_group_name:` inventory name of ETCD group. Default `etcd`
   - `masters_group_name:` inventory name of Kubernetes masters group. Default `masters`
-  - `kube_version:` version of Kubernetes components. Default `1.13.0`
+  - `kube_version:` version of Kubernetes components. Default `1.13.12`
   - `kube_cni_type:` type of CNI. Can be `weave` or `flannel`. Default `weave`
   - `kube_pod_ip_range:` CIDR for pods network. Default `10.32.0.0/12`
   - `kube_service_cluster_ip_range:` network CIDR for Kubernetes services. Default `172.30.0.0/24`

@@ -12,7 +12,7 @@
   - `kube_crt_expire_date:` certificate expire date in ASN1 TIME format. Default `20291231235959Z`
   - `masters_group_name:` inventory name of Kubernetes masters group. Default `masters`
   - `kube_bootstrap_token:` Kubernetes bootstrap token. Default `a90d81632f0d19718e2d24ab1d4df117`
-  - `kube_version:` version of Kubernetes components. Default `1.13.0`
+  - `kube_version:` version of Kubernetes components. Default `1.13.12`
   - `cluster_dns_type:` DNS server type for cluster. Can be `coredns` or `nodelocaldns`. Default `coredns`
   - `coredns_service_ip:` IP address of CoreDNS service. Default `172.30.0.10`
   - `nodelocaldns_ip:` IP address of NodeLocalDNS cache. Default `169.254.25.10`  
