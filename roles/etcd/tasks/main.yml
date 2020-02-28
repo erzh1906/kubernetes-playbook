@@ -62,7 +62,7 @@
 
 - name: Upload ETCD configuration
   template:
-    src: etcd.conf
+    src: etcd-{{ etcd_version.split(".")[:2] | join(".") }}.conf
     dest: /etc/etcd/etcd.conf
   notify: restart etcd
   tags:
