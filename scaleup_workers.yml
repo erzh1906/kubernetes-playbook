@@ -1,0 +1,24 @@
+---
+
+- name: Gather facts from all servers
+  hosts: all
+  tasks: []
+
+#
+# Install basic software on all servers in cluster and prepare Kubernetes nodes
+#
+
+- import_playbook: init/main.yml
+
+#
+# Fetch certificates
+#
+
+- import_playbook: bootstrap/certificates/fetch.yml
+
+#
+# Deploy core components and setup Kubernetes nodes
+#
+
+- import_playbook: core/nodes/workers.yml
+- import_playbook: core/nodes/labels.yml

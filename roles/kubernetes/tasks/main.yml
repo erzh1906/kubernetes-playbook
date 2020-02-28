@@ -7,7 +7,6 @@
     state: present
   tags:
     - kubernetes
-    - kubernetes.install
 
 - name: Create user for pods runAsUser securityContext
   user:
@@ -17,7 +16,6 @@
     uid: "{{ kube_uid }}"
   tags:
     - kubernetes
-    - kubernetes.install
 
 - name: Create directories for Kubernetes
   file:
@@ -30,7 +28,6 @@
     - /root/.kube
   tags:
     - kubernetes
-    - kubernetes.install
 
 - name: Add kubernetes repository
   copy:
@@ -38,7 +35,6 @@
     dest: /etc/yum.repos.d/kubernetes.repo
   tags:
     - kubernetes
-    - kubernetes.install
 
 - name: Install kubelet, kubectl and cri-tools
   yum:
@@ -49,7 +45,6 @@
     state: present
   tags:
     - kubernetes
-    - kubernetes.install
 
 - name: Install python packages for working with Kubernetes objects via Ansible
   yum:
@@ -59,7 +54,6 @@
     state: present
   tags:
     - kubernetes
-    - kubernetes.install
 
 - name: Upload crictl configuration
   template:
@@ -67,7 +61,6 @@
     dest: /etc/crictl.yaml
   tags:
     - kubernetes
-    - kubernetes.conf
 
 - name: Start and enable kubelet
   systemd:
@@ -77,4 +70,3 @@
     daemon_reload: yes
   tags:
     - kubernetes
-    - kubernetes.start

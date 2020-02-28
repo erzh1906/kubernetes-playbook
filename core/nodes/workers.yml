@@ -1,0 +1,11 @@
+---
+
+- name: Setup worker nodes
+  hosts: "{{ groups[workers_group_name] }}"
+  roles:
+    - k8s_worker
+
+- name: Approve pendig Kubelet CSRs and label nodes
+  hosts: "{{ groups[masters_group_name][0] }}"
+  roles:
+    - k8s_node_labels

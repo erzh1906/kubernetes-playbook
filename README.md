@@ -1,6 +1,6 @@
 ![Kubernetes Logo](https://raw.githubusercontent.com/kubernetes-sigs/kubespray/master/docs/img/kubernetes-logo.png)
 
-# Deploy a Production Ready Kubernetes 1.13 Baremetal Cluster
+# Deploy a Production Ready Kubernetes 1.13 Baremetal Cluster (Hardway like)
 
 -   **Highly available** cluster
 -   **ContainerD** runtime
@@ -8,33 +8,29 @@
 -   **CentOS 7** only
 -   **Nginx INC** ingress controller
 
-## Architecture
-
-![architecture](arch.png)
-
-## Quick Start
-
-To deploy the cluster you can use :
-
-### Ansible
-
 #### Usage
   
     # Deploy your cluster
     ansible-playbook -i example.yml deploy_cluster.yml -e @extra_vars_example.yml
 
-    # Upgrade your cluster
-    ansible-playbook -i example.yml cluster_upgrade.yml
+    # Scale up worker nodes
+    ansible-playbook -i example.yml scaleup_workers.yml -e @extra_vars_example.yml
 
 **Requirements:**
-  - Ansible 2.8
+  - Ansible 2.9
   - You need servers with at least 4 CPUs for ETCD nodes
-  - All your nodes should have valid FQDNs as defined in inventory file
 
 **Certificates variables:**
 
-  - `kube_crt_start_date:` certificate start date in ASN1 TIME format. Default `20190101000001Z`
-  - `kube_crt_expire_date:` certificate expire date in ASN1 TIME format. Default `20291231235959Z`
+  - `kube_ca_crt_start_date:` CA certificates start date in ASN1 TIME format. Default `20190101000001Z`
+  - `kube_ca_crt_expire_date:` CA certificates expire date in ASN1 TIME format. Default `20691231235959Z`
+
+  - `kube_etcd_crt_start_date:` ETCD certificates start date in ASN1 TIME format. Default `20190101000001Z`
+  - `kube_etcd_crt_expire_date:` ETCD certificates expire date in ASN1 TIME format. Default `20691231235959Z`
+
+  - `kube_crt_start_date:` certificates start date in ASN1 TIME format. Default `20190101000001Z`
+  - `kube_crt_expire_date:` certificates expire date in ASN1 TIME format. Default `20291231235959Z`
+
   - `kube_crt_country_name:` country name of certificate (C). Default `KZ`
   - `kube_crt_locality_name:` locality name of certificate (L). Default `Almaty`
   - `kube_crt_organizational_unit_name:` organization unit name of certificate (OU). Default `Kubernetes`
@@ -54,6 +50,7 @@ To deploy the cluster you can use :
 
   - `cluster_dns_type:` DNS server type for cluster. Can be `coredns` or `nodelocaldns`. Default `coredns`
   - `coredns_version:` version of CoreDNS. Default `1.5.0`
+  - `coredns_replica_count:` desired count of CoreDNS instances. Default `4`
   - `nodelocaldns_version:` version of NodeLocalDNS. Default `1.15.5`
   - `coredns_service_ip:` IP address of CoreDNS Kubernetes service. Default `172.30.0.10`
   - `nodelocaldns_ip:` IP address of NodeLocalDNS cache. Default `169.254.25.10`
@@ -64,6 +61,9 @@ To deploy the cluster you can use :
   - `masters_group_name:` inventory name of Kubernetes masters group. Default `masters`
   - `workers_group_name:` inventory name of Kubernetes workers group. Default `nodes`
 
+**ETCD variables:**
+
+  - `etcd_version:` version of ETCD. Default `3.4.0`
 
 **Kubernetes variables:**
 
@@ -72,10 +72,15 @@ To deploy the cluster you can use :
   - `kube_service_ip:` IP address of Kubernetes service. Default `172.30.0.1`
   - `kube_gid:` Linux group ID for pods runAsGroup securityContext. Default `2000`
   - `kube_uid:` Linux user ID for pods runAsUser securityContext. Default `2000`
-  - `kube_version:` version of Kubernetes components. Default `1.13.0`
+  - `kube_version:` version of Kubernetes components. Default `1.13.12`
   - `metrics_server_version:` version of Metrics Server. Default `0.3.6`
   - `ingress_version:` version of Nginx INC. ingress controller. Default `1.4.6`
 
+**Runtime variables:**
+
+  - `containerd_repository:` repository of containerd package. `epel` and `docker-ce` available. Default `epel`
+  - `containerd_ce_version:` version of containerd in Docker CE repository. Default `1.2.10-3.2`
+  - `containerd_epel_version:` version of containerd in epel repository. Default `1.2.4-1`
 
 **Notes:**
 
@@ -83,6 +88,3 @@ To deploy the cluster you can use :
   - You should generate `kube_encryption_key` by `head -c 32 /dev/urandom | base64` command
   - You should generate `weave_password` by `openssl rand -hex 128` command
   - Tested only on DigitalOcean droplets
-
-**WARNINGS:**
-  - Don't run `cluster_upgrade.yml` for major Kubernetes upgrades

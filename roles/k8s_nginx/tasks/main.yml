@@ -6,7 +6,6 @@
     dest: /etc/yum.repos.d/nginx.repo
   tags:
     - nginx
-    - nginx.install
 
 - name: Exclude nginx from epel repository
   lineinfile:
@@ -15,7 +14,6 @@
     line: 'exclude=nginx*'
   tags:
     - nginx
-    - nginx.install
 
 - name: Install nginx
   yum:
@@ -23,7 +21,6 @@
     state: present
   tags:
     - nginx
-    - nginx.install
 
 - name: Upload nginx.conf
   template:
@@ -32,7 +29,6 @@
   notify: restart nginx
   tags:
     - nginx
-    - nginx.conf
 
 - name: Create systemd directory
   file:
@@ -41,7 +37,6 @@
     mode: 0755
   tags:
     - nginx
-    - nginx.conf
 
 - name: Upload systemd modification
   copy:
@@ -50,7 +45,6 @@
   notify: restart nginx
   tags:
     - nginx
-    - nginx.conf
 
 - name: Start and enable Nginx
   systemd:
@@ -60,4 +54,3 @@
     daemon_reload: yes
   tags:
     - nginx
-    - nginx.start

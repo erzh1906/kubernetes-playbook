@@ -5,16 +5,17 @@
   tasks: []
 
 #
-# Install basic software
+# Install basic software on all servers in cluster and prepare Kubernetes nodes
 #
 
 - import_playbook: init/main.yml
 
 #
-# Generate, fetch and deploy certificates
+# Generate and fetch certificates
 #
 
-- import_playbook: bootstrap/certificates/main.yml
+- import_playbook: bootstrap/certificates/generate.yml
+- import_playbook: bootstrap/certificates/fetch.yml
 
 #
 # Deploy bootstrap token
@@ -29,25 +30,21 @@
 - import_playbook: bootstrap/encryption/main.yml
 
 #
-# Generate, fetch and deploy kubeconfig
-#
-
-- import_playbook: bootstrap/kubeconfigs/main.yml
-
-#
 # Setup CoreOS ETCD 
 #
 
 - import_playbook: etcd/main.yml
 
 #
-# Deploy core components and setup nodes
+# Deploy core components and setup Kubernetes nodes
 #
 
-- import_playbook: core/nodes/main.yml
+- import_playbook: core/nodes/masters.yml
+- import_playbook: core/nodes/workers.yml
+- import_playbook: core/nodes/labels.yml
 
 #
-# Deploy Weave CNI plugin
+# Deploy CNI plugin
 #
 
 - import_playbook: core/cni/main.yml
@@ -68,7 +65,7 @@
 # Deploy Metrics Server
 #
 
-- import_playbook: core/metrics_server/main.yml
+- import_playbook: addons/metrics_server/main.yml
 
 #
 # Deploy NodeLocalDNS cache

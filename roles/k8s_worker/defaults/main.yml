@@ -1,6 +1,15 @@
 ---
 
-kube_version: 1.13.0
+kube_crt_country_name: KZ
+kube_crt_locality_name: Almaty
+kube_crt_organization_name: Aviata LLC
+kube_crt_organizational_unit_name: Kubernetes
+kube_crt_state_or_province_name: Almaty
+kube_crt_start_date: 20190101000001Z
+kube_crt_expire_date: 20291231235959Z
+masters_group_name: masters
+kube_bootstrap_token: a90d81632f0d19718e2d24ab1d4df117
+kube_version: 1.13.12
 cluster_dns_type: coredns
 coredns_service_ip: 172.30.0.10
 nodelocaldns_ip: 169.254.25.10

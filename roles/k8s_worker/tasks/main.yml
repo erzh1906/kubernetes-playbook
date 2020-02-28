@@ -11,25 +11,24 @@
       {{ coredns_service_ip }}
       {%- endif -%}
 
-- name: Upload manifest for Kubernetes Proxy
-  template:
-    src: kube-proxy.yaml
-    dest: /etc/kubernetes/manifests/kube-proxy.yaml
-  tags:
-    - k8s_worker
+- include: certificates.yml
+- include: kubeconfigs.yml
+- include: components.yml
+- include: kubelet.yml
 
-- name: Upload kubelet-config.yml
-  template:
-    src: kubelet-config.yaml
-    dest: /var/lib/kubelet/kubelet-config.yaml
-  notify: restart kubelet
-  tags:
-    - k8s_worker
-
-- name: Upload systemd configuration
-  template:
-    src: kubelet.service
-    dest: /etc/systemd/system/kubelet.service
-  notify: restart kubelet
+- name: Remove temporary files
+  file:
+    path: "/etc/ssl/kubernetes/{{ item }}"
+    state: absent
+  loop:
+    - ca.csr
+    - ca.key
+    - front-proxy-ca.csr
+    - front-proxy-ca.key
+    - sa.crt
+    - sa.key
+    - etcd/ca.crt
+    - etcd/ca.key
+    - etcd/ca.csr
   tags:
     - k8s_worker

@@ -1,5 +1,23 @@
 ---
 
+- name: Deploy CA certificates
+  copy:
+    content: "{{ item.content | b64decode }}"
+    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    mode: 0644
+  loop: "{{ hostvars[groups[masters_group_name][0]].k8s_ca_certificates.results }}"
+  tags:
+    - etcd
+
+- name: Deploy ETCD certificates
+  copy:
+    content: "{{ item.content | b64decode }}"
+    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    mode: 0644
+  loop: "{{ hostvars[groups[masters_group_name][0]].etcd_certificates.results }}"
+  tags:
+    - etcd
+
 - name: Create ETCD user
   user:
     name: etcd
@@ -7,7 +25,6 @@
     home: /var/lib/etcd
   tags:
     - etcd
-    - etcd.install
 
 - name: Create ETCD configuration and data directories
   file:
@@ -21,7 +38,6 @@
     - /etc/etcd
   tags:
     - etcd
-    - etcd.install
 
 - name: Get ETCD binaries
   unarchive:
@@ -38,16 +54,14 @@
   notify: restart etcd
   tags:
     - etcd
-    - etcd.install
 
 - name: Upload ETCD configuration
   template:
-    src: etcd.conf
+    src: etcd-{{ etcd_version.split(".")[:2] | join(".") }}.conf
     dest: /etc/etcd/etcd.conf
   notify: restart etcd
   tags:
     - etcd
-    - etcd.conf
 
 - name: Upload systemd unit file
   copy:
@@ -56,7 +70,6 @@
   notify: restart etcd
   tags:
     - etcd
-    - etcd.conf
 
 - name: Start and enable ETCD
   systemd:
@@ -66,4 +79,3 @@
     daemon_reload: yes
   tags:
     - etcd
-    - etcd.start

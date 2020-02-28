@@ -1,19 +1,19 @@
 ---
 
 - name: Label master nodes
-  command: kubectl label --overwrite node {{ item }} kubernetes.io/role=master
+  command: kubectl label --overwrite node {{ hostvars[item]['ansible_nodename'] }} kubernetes.io/role=master
   loop: "{{ groups[masters_group_name] }}"
   tags:
     - k8s_node_labels
 
 - name: Taint master nodes
-  command: kubectl taint --overwrite node {{ item }} kubernetes.io/role=master:NoSchedule
+  command: kubectl taint --overwrite node {{ hostvars[item]['ansible_nodename'] }} kubernetes.io/role=master:NoSchedule
   loop: "{{ groups[masters_group_name] }}"
   tags:
     - k8s_node_labels
 
 - name: Label worker nodes
-  command: kubectl label --overwrite node {{ item }} kubernetes.io/role=node 
+  command: kubectl label --overwrite node {{ hostvars[item]['ansible_nodename'] }} kubernetes.io/role=node 
   loop: "{{ groups[workers_group_name] }}"
   tags:
     - k8s_node_labels

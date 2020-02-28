@@ -1,0 +1,63 @@
+################################################################
+##                                                            ##
+## GENERATED FROM ANSIBLE TEMPLATE                            ##
+## DO NOT EDIT DIRECTLY                                       ##
+## YOUR CHANGES WILL BE OVERWRITEN WHEN NEXT ANSIBLE TASK RUN ##
+##                                                            ##
+################################################################
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+    kubernetes.certificate.start.date: "{{ kube_crt_start_date }}"
+    kubernetes.certificate.expire.date: "{{ kube_crt_expire_date }}"
+    prometheus.io/port: "10249"
+    prometheus.io/scrape: "true"
+  labels:
+    k8s-app: kube-proxy
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-proxy
+    - --metrics-bind-address=0.0.0.0
+    - --kubeconfig=/srv/kubernetes/kube-proxy.kubeconfig
+    - --proxy-mode=iptables
+    - --v=3
+    image: k8s.gcr.io/kube-proxy:v{{ kube_version }}
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10256
+        scheme: HTTP
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: kube-proxy
+    resources: {}
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /srv/kubernetes
+      name: srvkube
+      readOnly: true
+    ports:
+    - containerPort: 10249
+      name: metrics
+      protocol: TCP
+    - containerPort: 10256
+      name: health
+      protocol: TCP
+  dnsPolicy: ClusterFirst
+  hostNetwork: true
+  securityContext: {}
+  volumes:
+  - hostPath:
+      path: /var/lib/kubernetes
+      type: ""
+    name: srvkube

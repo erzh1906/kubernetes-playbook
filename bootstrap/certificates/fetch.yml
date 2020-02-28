@@ -1,0 +1,6 @@
+---
+
+- name: Generate certificates
+  hosts: "{{ groups[masters_group_name][0] }}"
+  roles:
+    - k8s_fetch_crt

@@ -2,7 +2,7 @@
 
 - name: Upload Kubernetes manifests for master node
   template:
-    src: "{{ item }}"
+    src: "manifests/{{ item }}"
     dest: "/etc/kubernetes/manifests/{{ item }}"
   loop:
     - kube-apiserver.yaml

@@ -1,6 +1,0 @@
----
-
-- name: Setup CoreDNS
-  hosts: all:&{{ masters_group_name }}[0]
-  roles:
-    - k8s_metrics_server

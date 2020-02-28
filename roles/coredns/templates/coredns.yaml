@@ -81,7 +81,7 @@ metadata:
     k8s-app: kube-dns
     kubernetes.io/name: "CoreDNS"
 spec:
-  replicas: {{ (groups[workers_group_name] | length)*2 }}
+  replicas: {{ coredns_replica_count }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

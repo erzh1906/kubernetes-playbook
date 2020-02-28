@@ -1,0 +1,207 @@
+---
+
+- name: Set etcd_ips
+  set_fact:
+    etcd_ips: "{{ groups[etcd_group_name] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list }}"
+  tags:
+    - k8s_etcd_crt
+
+- name: Set kube_etcd_san_dns
+  set_fact:
+    kube_etcd_san_dns: "{{ item.value | map('regex_replace', '^(.*)$', 'DNS:\\1') | list }}"
+  with_dict:
+    etcd_dns_names: "{{ groups[etcd_group_name] }}"
+  tags:
+    - k8s_etcd_crt
+
+- name: Set kube_etcd_san_ips
+  set_fact:
+    kube_etcd_san_ips: "{{ item.value | map('regex_replace', '^(.*)$', 'IP:\\1') | list }}"
+  with_dict:
+    etcd_ips: "{{ etcd_ips }}"
+  tags:
+    - k8s_etcd_crt
+
+- name: Set kube_etcd_san
+  set_fact:
+    kube_etcd_san: "{{ kube_etcd_san_dns + ['DNS:localhost'] + kube_etcd_san_ips + ['IP:127.0.0.1'] }}"
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate private keys for ETCD related certificates
+  openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ item }}"
+    size: 2048
+    mode: 0644
+    backup: yes
+  loop:
+    - etcd/server.key
+    - etcd/peer.key
+    - etcd/healthcheck-client.key
+    - apiserver-etcd-client.key
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate CSR for ETCD server certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/etcd/server.csr
+    privatekey_path: /etc/ssl/kubernetes/etcd/server.key
+    common_name: kube-etcd
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "{{ kube_crt_organization_name }}"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    use_common_name_for_san: no
+    subject_alt_name: "{{ kube_etcd_san }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate CSR for ETCD peer certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/etcd/peer.csr
+    privatekey_path: /etc/ssl/kubernetes/etcd/peer.key
+    common_name: kube-etcd-peer
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "{{ kube_crt_organization_name }}"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    use_common_name_for_san: no
+    subject_alt_name: "{{ kube_etcd_san }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate CSR for ETCD healthcheck client certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/etcd/healthcheck-client.csr
+    privatekey_path: /etc/ssl/kubernetes/etcd/healthcheck-client.key
+    common_name: kube-etcd-healthcheck-client
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "{{ kube_crt_organization_name }}"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - clientAuth
+    use_common_name_for_san: no
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate CSR for Kubernetes API server client certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/apiserver-etcd-client.csr
+    privatekey_path: /etc/ssl/kubernetes/apiserver-etcd-client.key
+    common_name: kube-apiserver-etcd-client
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "system:masters"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - clientAuth
+    use_common_name_for_san: no
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate certificate for ETCD server
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/etcd/server.crt
+    privatekey_path: /etc/ssl/kubernetes/etcd/server.key
+    csr_path: /etc/ssl/kubernetes/etcd/server.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/etcd/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/etcd/ca.key
+    ownca_not_before: "{{ kube_etcd_crt_start_date }}"
+    ownca_not_after: "{{ kube_etcd_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate certificate for ETCD peer
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/etcd/peer.crt
+    privatekey_path: /etc/ssl/kubernetes/etcd/peer.key
+    csr_path: /etc/ssl/kubernetes/etcd/peer.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/etcd/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/etcd/ca.key
+    ownca_not_before: "{{ kube_etcd_crt_start_date }}"
+    ownca_not_after: "{{ kube_etcd_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate certificate for ETCD healthcheck client
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/etcd/healthcheck-client.crt
+    privatekey_path: /etc/ssl/kubernetes/etcd/healthcheck-client.key
+    csr_path: /etc/ssl/kubernetes/etcd/healthcheck-client.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/etcd/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/etcd/ca.key
+    ownca_not_before: "{{ kube_etcd_crt_start_date }}"
+    ownca_not_after: "{{ kube_etcd_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_etcd_crt
+
+- name: Generate client certificate Kubernetes API server
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/apiserver-etcd-client.crt
+    privatekey_path: /etc/ssl/kubernetes/apiserver-etcd-client.key
+    csr_path: /etc/ssl/kubernetes/apiserver-etcd-client.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/etcd/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/etcd/ca.key
+    ownca_not_before: "{{ kube_etcd_crt_start_date }}"
+    ownca_not_after: "{{ kube_etcd_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_etcd_crt

@@ -1,0 +1,368 @@
+---
+
+- name: Deploy CA certificates
+  copy:
+    content: "{{ item.content | b64decode }}"
+    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    mode: 0644
+  loop: "{{ hostvars[groups[masters_group_name][0]].k8s_ca_certificates.results }}"
+  tags:
+    - k8s_master
+
+- name: Deploy ETCD certificates
+  copy:
+    content: "{{ item.content | b64decode }}"
+    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    mode: 0644
+  loop: "{{ hostvars[groups[masters_group_name][0]].etcd_certificates.results }}"
+  tags:
+    - k8s_master
+
+- name: Deploy CA certificates
+  copy:
+    content: "{{ item.content | b64decode }}"
+    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    mode: 0644
+  loop: "{{ hostvars[groups[masters_group_name][0]].frontproxy_certificates.results }}"
+  tags:
+    - k8s_master
+
+- name: Set kube_api_ips
+  set_fact:
+    kube_api_ips: "{{ groups[masters_group_name] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list }}"
+  tags:
+    - k8s_master
+
+- name: Set kube_api_san_dns
+  set_fact:
+    kube_api_san_dns: "{{ item.value | map('regex_replace', '^(.*)$', 'DNS:\\1') | list }}"
+  with_dict:
+    kube_api_dns_names: "{{ groups[masters_group_name] }}"
+  tags:
+    - k8s_master
+
+- name: Set kube_api_san_ips
+  set_fact:
+    kube_api_san_ips: "{{ item.value | map('regex_replace', '^(.*)$', 'IP:\\1') | list }}"
+  with_dict:
+    kube_api_ips: "{{ kube_api_ips }}"
+  tags:
+    - k8s_master
+
+- name: Set kube_masters_san
+  set_fact:
+    kube_masters_san: "{{ kube_api_san_dns + ['DNS:kubernetes', 'DNS:kubernetes.default', 'DNS:kubernetes.default.svc', 'DNS:kubernetes.default.svc.cluster', 'DNS:kubernetes.default.svc.cluster.local'] + kube_api_san_ips + ['IP:127.0.0.1', 'IP:' + kube_service_ip] }}"
+  tags:
+    - k8s_master
+
+- name: Generate private keys for Kubernetes related certificates
+  openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ item }}"
+    size: 2048
+    mode: 0644
+    backup: yes
+  loop:
+    - apiserver.key
+    - apiserver-kubelet-client.key
+    - controller-manager.key
+    - scheduler.key
+    - admin.key
+    - kube-proxy.key
+  tags:
+    - k8s_master
+
+- name: Generate CSR for Kubernetes API server certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/apiserver.csr
+    privatekey_path: /etc/ssl/kubernetes/apiserver.key
+    common_name: kube-apiserver
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "{{ kube_crt_organization_name }}"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - serverAuth
+    use_common_name_for_san: no
+    subject_alt_name: "{{ kube_masters_san }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate certificate for Kubernetes API server
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/apiserver.crt
+    privatekey_path: /etc/ssl/kubernetes/apiserver.key
+    csr_path: /etc/ssl/kubernetes/apiserver.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate CSR for Kubernetes API server Kubelet client certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/apiserver-kubelet-client.csr
+    privatekey_path: /etc/ssl/kubernetes/apiserver-kubelet-client.key
+    common_name: kube-apiserver-kubelet-client
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "system:masters"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - clientAuth
+    use_common_name_for_san: no
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate client certificate for Kubernetes API server Kubelet
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/apiserver-kubelet-client.crt
+    privatekey_path: /etc/ssl/kubernetes/apiserver-kubelet-client.key
+    csr_path: /etc/ssl/kubernetes/apiserver-kubelet-client.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate CSR for Kubernetes Controller Manager certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/controller-manager.csr
+    privatekey_path: /etc/ssl/kubernetes/controller-manager.key
+    common_name: "system:kube-controller-manager"
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "{{ kube_crt_organization_name }}"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    use_common_name_for_san: no
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate certificate for Kubernetes Controller Manager
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/controller-manager.crt
+    privatekey_path: /etc/ssl/kubernetes/controller-manager.key
+    csr_path: /etc/ssl/kubernetes/controller-manager.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate CSR for Kubernetes Scheduler certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/scheduler.csr
+    privatekey_path: /etc/ssl/kubernetes/scheduler.key
+    common_name: "system:kube-scheduler"
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "{{ kube_crt_organization_name }}"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    use_common_name_for_san: no
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate certificate for Kubernetes Scheduler
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/scheduler.crt
+    privatekey_path: /etc/ssl/kubernetes/scheduler.key
+    csr_path: /etc/ssl/kubernetes/scheduler.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate CSR for Kubernetes admin certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/admin.csr
+    privatekey_path: /etc/ssl/kubernetes/admin.key
+    common_name: "kubernetes-admin"
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "system:masters"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    use_common_name_for_san: no
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate certificate for Kubernetes admin
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/admin.crt
+    privatekey_path: /etc/ssl/kubernetes/admin.key
+    csr_path: /etc/ssl/kubernetes/admin.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate CSR for Kubernetes Proxy certificate
+  openssl_csr:
+    path: /etc/ssl/kubernetes/kube-proxy.csr
+    privatekey_path: /etc/ssl/kubernetes/kube-proxy.key
+    common_name: "system:kube-proxy"
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "system:node-proxier"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    use_common_name_for_san: no
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate certificate for Kubernetes Proxy
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/kube-proxy.crt
+    privatekey_path: /etc/ssl/kubernetes/kube-proxy.key
+    csr_path: /etc/ssl/kubernetes/kube-proxy.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate private key for kubelet
+  openssl_privatekey:
+    path: "/etc/ssl/kubernetes/{{ ansible_nodename }}.key"
+    size: 2048
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate CSR for kubelet
+  openssl_csr:
+    path: /etc/ssl/kubernetes/{{ ansible_nodename }}.csr
+    privatekey_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.key
+    common_name: "system:node:{{ ansible_nodename }}"
+    country_name: "{{ kube_crt_country_name }}"
+    locality_name: "{{ kube_crt_locality_name }}"
+    organization_name: "system:nodes"
+    organizational_unit_name: "{{ kube_crt_organizational_unit_name }}"
+    state_or_province_name: "{{ kube_crt_state_or_province_name }}"
+    basic_constraints:
+      - CA:FALSE
+    basic_constraints_critical: yes
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    use_common_name_for_san: no
+    subject_alt_name: "DNS:{{ ansible_nodename }},IP:{{ ansible_default_ipv4.address }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_master
+
+- name: Generate certificate for kubelet
+  openssl_certificate:
+    path: /etc/ssl/kubernetes/{{ ansible_nodename }}.crt
+    privatekey_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.key
+    csr_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.csr
+    provider: ownca
+    ownca_path: /etc/ssl/kubernetes/ca.crt
+    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_not_before: "{{ kube_crt_start_date }}"
+    ownca_not_after: "{{ kube_crt_expire_date }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - k8s_worker

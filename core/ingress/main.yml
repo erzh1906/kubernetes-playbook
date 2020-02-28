@@ -1,6 +1,6 @@
 ---
 
 - name: Setup Nginx INC. ingress controller
-  hosts: all:&{{ masters_group_name }}[0]
+  hosts: "{{ groups[masters_group_name][0] }}"
   roles:
     - ingress
