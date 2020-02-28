@@ -8,7 +8,6 @@
   loop: "{{ hostvars[groups[masters_group_name][0]].k8s_ca_certificates.results }}"
   tags:
     - etcd
-    - etcd.certificates
 
 - name: Deploy ETCD certificates
   copy:
@@ -18,7 +17,6 @@
   loop: "{{ hostvars[groups[masters_group_name][0]].etcd_certificates.results }}"
   tags:
     - etcd
-    - etcd.certificates
 
 - name: Create ETCD user
   user:
@@ -27,7 +25,6 @@
     home: /var/lib/etcd
   tags:
     - etcd
-    - etcd.install
 
 - name: Create ETCD configuration and data directories
   file:
@@ -41,7 +38,6 @@
     - /etc/etcd
   tags:
     - etcd
-    - etcd.install
 
 - name: Get ETCD binaries
   unarchive:
@@ -58,7 +54,6 @@
   notify: restart etcd
   tags:
     - etcd
-    - etcd.install
 
 - name: Upload ETCD configuration
   template:
@@ -67,7 +62,6 @@
   notify: restart etcd
   tags:
     - etcd
-    - etcd.conf
 
 - name: Upload systemd unit file
   copy:
@@ -76,7 +70,6 @@
   notify: restart etcd
   tags:
     - etcd
-    - etcd.conf
 
 - name: Start and enable ETCD
   systemd:
@@ -86,4 +79,3 @@
     daemon_reload: yes
   tags:
     - etcd
-    - etcd.start

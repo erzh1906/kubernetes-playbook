@@ -15,7 +15,6 @@
     state: directory
   tags:
     - containerd
-    - containerd.conf
 
 - name: Upload systemd modification
   copy:
@@ -24,7 +23,6 @@
   notify: restart containerd
   tags:
     - containerd
-    - containerd.conf
 
 - name: Upload containerd configuration
   copy:
@@ -33,7 +31,6 @@
   notify: restart containerd
   tags:
     - containerd
-    - containerd.conf
 
 - name: Start and enable containerd
   systemd:
@@ -43,4 +40,3 @@
     daemon_reload: yes
   tags:
     - containerd
-    - containerd.start

@@ -13,7 +13,6 @@
     - overlay
   tags:
     - kernel
-    - kernel.modprobe
 
 - name: Make modules permanent
   lineinfile:
@@ -29,7 +28,6 @@
     - overlay
   tags:
     - kernel
-    - kernel.modprobe
 
 - name: Set required kernel parameters
   sysctl:
@@ -45,4 +43,3 @@
     - net.ipv4.ip_forward
   tags:
     - kernel
-    - kernel.sysctl

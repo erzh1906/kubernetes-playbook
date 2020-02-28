@@ -70,7 +70,6 @@
     - kube-proxy.key
   tags:
     - k8s_master
-    - k8s_master.kubernetes
 
 - name: Generate CSR for Kubernetes API server certificate
   openssl_csr:

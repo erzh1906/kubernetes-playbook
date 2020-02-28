@@ -30,3 +30,5 @@
     - etcd/ca.crt
     - etcd/ca.key
     - etcd/ca.csr
+  tags:
+    - k8s_worker

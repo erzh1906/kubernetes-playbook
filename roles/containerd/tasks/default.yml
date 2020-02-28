@@ -6,7 +6,6 @@
     state: present
   tags:
     - containerd
-    - containerd.install
 
 - name: Install containerd
   yum:
@@ -14,4 +13,3 @@
     state: present
   tags:
     - containerd
-    - containerd.install
