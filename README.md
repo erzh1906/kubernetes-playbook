@@ -8,10 +8,6 @@
 -   **CentOS 7** only
 -   **Nginx INC** ingress controller
 
-## Architecture
-
-![architecture](arch.png)
-
 ## Quick Start
 
 To deploy the cluster you can use :
