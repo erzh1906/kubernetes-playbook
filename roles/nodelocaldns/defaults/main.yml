@@ -2,4 +2,4 @@
 
 nodelocaldns_version: 1.15.5
 nodelocaldns_ip: 169.254.25.10
-coredns_service_ip: 172.30.0.10
+coredns_service_ip: 10.96.0.10

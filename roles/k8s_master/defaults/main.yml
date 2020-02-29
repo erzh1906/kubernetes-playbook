@@ -16,7 +16,7 @@ masters_group_name: masters
 kube_version: 1.13.12
 kube_cni_type: weave
 kube_pod_ip_range: 10.32.0.0/12
-kube_service_cluster_ip_range: 172.30.0.0/24
+kube_service_cluster_ip_range: 10.96.0.0/12
 cluster_dns_type: coredns
-coredns_service_ip: 172.30.0.10
+coredns_service_ip: 10.96.0.10
 nodelocaldns_ip: 169.254.25.10

@@ -34,7 +34,7 @@ all:
     containerd_ce_version: 1.2.10-3.2
     containerd_epel_version: 1.2.4-1
     containerd_repository: docker-ce
-    coredns_service_ip: 172.30.0.10
+    coredns_service_ip: 10.96.0.10
     coredns_version: 1.5.0
     etcd_group_name: etcd
     etcd_version: 3.4.0
@@ -52,7 +52,7 @@ all:
     kube_encryption_key: "Aeb0eNp576qMFof+m2GsCW1Nti2gPeoJeNd5ca+2RYI="
     kube_gid: 2000
     kube_pod_ip_range: 10.32.0.0/12
-    kube_service_cluster_ip_range: 172.30.0.0/24
+    kube_service_cluster_ip_range: 10.96.0.0/12
     kube_uid: 2000
     kube_version: 1.13.12
     masters_group_name: masters
