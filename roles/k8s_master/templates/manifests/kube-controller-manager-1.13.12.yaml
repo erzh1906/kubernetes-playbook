@@ -37,7 +37,6 @@ spec:
     - --root-ca-file=/etc/ssl/kubernetes/ca.crt
     - --service-account-private-key-file=/etc/ssl/kubernetes/sa.key
     - --use-service-account-credentials=true
-    - --v=3
 {% if kube_cni_type == "flannel" %}
     - --allocate-node-cidrs=true
     - --cluster-cidr={{ kube_pod_ip_range }}
@@ -72,16 +71,14 @@ spec:
     - containerPort: 10257
       name: secure
       protocol: TCP
-  dnsPolicy: ClusterFirst
   hostNetwork: true
   priorityClassName: system-cluster-critical
-  securityContext: {}
   volumes:
   - hostPath:
       path: /var/lib/kubernetes
-      type: ""
+      type: "DirectoryOrCreate"
     name: srvkube
   - hostPath:
       path: /etc/ssl
-      type: ""
+      type: "DirectoryOrCreate"
     name: etcssl

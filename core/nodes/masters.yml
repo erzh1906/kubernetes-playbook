@@ -3,6 +3,9 @@
 - name: Setup master nodes
   hosts: "{{ groups[masters_group_name] }}"
   roles:
+    - k8s_kernel
+    - k8s_nginx
+    - containerd
     - k8s_master
 
 - name: Setup RBAC configuration for TLS bootstraping and API server to Kubelet connection

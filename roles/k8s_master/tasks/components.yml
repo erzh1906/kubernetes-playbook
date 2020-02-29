@@ -5,16 +5,15 @@
     src: "manifests/{{ item }}"
     dest: "/etc/kubernetes/manifests/{{ item }}"
   loop:
-    - kube-apiserver.yaml
-    - kube-scheduler.yaml
-    - kube-controller-manager.yaml
-    - kube-proxy.yaml
+    - kube-apiserver-{{ kube_version }}.yaml
+    - kube-scheduler-{{ kube_version }}.yaml
+    - kube-controller-manager-{{ kube_version }}.yaml
   tags:
     - k8s_master
 
 - name: Upload kube-scheduler.yaml
   copy:
-    src: kube-scheduler.yaml
+    src: kube-scheduler-{{ kube_version }}.yaml
     dest: /var/lib/kubernetes/kube-scheduler.yaml
   tags:
     - k8s_master

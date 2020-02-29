@@ -11,6 +11,7 @@
       {{ coredns_service_ip }}
       {%- endif -%}
 
+- include: kubernetes.yml
 - include: certificates.yml
 - include: kubeconfigs.yml
 - include: components.yml

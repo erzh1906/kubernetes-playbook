@@ -1,0 +1,78 @@
+---
+
+- name: Create group for pods runAsGroup securityContext
+  group:
+    name: kubegroup
+    gid: "{{ kube_gid }}"
+    state: present
+  tags:
+    - k8s_master
+
+- name: Create user for pods runAsUser securityContext
+  user:
+    name: kubeuser
+    shell: /bin/bash
+    group: kubegroup
+    uid: "{{ kube_uid }}"
+  tags:
+    - k8s_master
+
+- name: Create directories for Kubernetes
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /var/lib/kubelet
+    - /var/lib/kubernetes
+    - /root/.kube
+  tags:
+    - k8s_master
+
+- name: Add kubernetes repository
+  yum_repository:
+    name: kubernetes
+    description: "Kubernetes"
+    file: kubernetes
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    gpgcheck: yes
+    repo_gpgcheck: yes
+    enabled: yes
+  tags:
+    - k8s_master
+
+- name: Install kubelet, kubectl and cri-tools
+  yum:
+    name:
+      - kubelet-{{ kube_version }}-0.x86_64
+      - kubectl-{{ kube_version }}-0.x86_64
+      - cri-tools
+    state: present
+  tags:
+    - k8s_master
+
+- name: Install python packages for working with Kubernetes objects via Ansible
+  yum:
+    name:
+      - python2-openshift.noarch
+      - PyYAML.x86_64
+    state: present
+  tags:
+    - k8s_master
+
+- name: Upload crictl configuration
+  copy:
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+  tags:
+    - k8s_master
+
+- name: Start and enable kubelet
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - k8s_master

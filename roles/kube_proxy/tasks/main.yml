@@ -1,0 +1,16 @@
+---
+
+- name: Upload Kubernetes Proxy manifest
+  template:
+    src: kube-proxy-{{ kube_version }}.yaml
+    dest: /root/kube-proxy-{{ kube_version }}.yaml
+    backup: yes
+  tags:
+    - kube_proxy
+
+- name: Apply uploaded manifest
+  k8s:
+    src: /root/kube-proxy-{{ kube_version }}.yaml
+    state: present
+  tags:
+    - kube_proxy

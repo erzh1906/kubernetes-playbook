@@ -44,6 +44,12 @@
 - import_playbook: core/nodes/labels.yml
 
 #
+# Deploy Kubernetes Proxy
+#
+
+- import_playbook: core/proxy/main.yml
+
+#
 # Deploy CNI plugin
 #
 

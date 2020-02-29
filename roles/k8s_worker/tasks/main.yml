@@ -11,9 +11,9 @@
       {{ coredns_service_ip }}
       {%- endif -%}
 
+- include: kubernetes.yml
 - include: certificates.yml
 - include: kubeconfigs.yml
-- include: components.yml
 - include: kubelet.yml
 
 - name: Remove temporary files

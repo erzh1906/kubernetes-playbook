@@ -3,6 +3,8 @@
 
 **Variables:**
 
+  - `kube_gid:` Linux group ID for pods runAsGroup securityContext. Default `2000`
+  - `kube_uid:` Linux user ID for pods runAsUser securityContext. Default `2000`
   - `kube_crt_country_name:` country name of certificate (C). Default `KZ`
   - `kube_crt_locality_name:` locality name of certificate (L). Default `Almaty`
   - `kube_crt_organization_name:` organization name of certificate (O). Default `Aviata LLC`

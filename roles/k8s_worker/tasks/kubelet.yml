@@ -2,7 +2,7 @@
 
 - name: Upload kubelet-config.yml
   template:
-    src: kubelet-config.yaml
+    src: kubelet/kubelet-config-{{ kube_version }}.yaml
     dest: /var/lib/kubelet/kubelet-config.yaml
   notify: restart kubelet
   tags:
@@ -10,7 +10,7 @@
 
 - name: Upload systemd configuration
   template:
-    src: kubelet.service
+    src: kubelet/kubelet-{{ kube_version }}.service
     dest: /etc/systemd/system/kubelet.service
   notify: restart kubelet
   tags:

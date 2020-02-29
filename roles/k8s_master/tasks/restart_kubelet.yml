@@ -27,10 +27,3 @@
     port: 10252
     timeout: 300
     delay: 10
-
-- name: Wait for kube-proxy become ready
-  wait_for:
-    host: 127.0.0.1
-    port: 10249
-    timeout: 300
-    delay: 10

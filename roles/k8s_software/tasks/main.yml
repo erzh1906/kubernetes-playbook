@@ -61,7 +61,7 @@
   tags:
     - software
 
-- name: Create directory for certificates
+- name: Create directories for certificates
   file:
     path: "{{ item }}"
     state: directory

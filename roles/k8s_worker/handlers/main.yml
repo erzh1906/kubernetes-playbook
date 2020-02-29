@@ -1,4 +1,8 @@
 ---
 
 - name: restart kubelet
-  include_tasks: restart_kubelet.yml
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
