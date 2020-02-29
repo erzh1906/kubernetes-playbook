@@ -1,0 +1,3 @@
+---
+
+kube_service_ip: "{{ kube_service_cluster_ip_range | ipaddr('1') | ipaddr('address') }}"

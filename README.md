@@ -69,7 +69,6 @@
 
   - `kube_bootstrap_token:` Kubernetes bootstrap token. Default `a90d81632f0d19718e2d24ab1d4df117`
   - `kube_encryption_key:` Kubernetes encryption key. Default `"Aeb0eNp576qMFof+m2GsCW1Nti2gPeoJeNd5ca+2RYI="`
-  - `kube_service_ip:` IP address of Kubernetes service. Default `172.30.0.1`
   - `kube_gid:` Linux group ID for pods runAsGroup securityContext. Default `2000`
   - `kube_uid:` Linux user ID for pods runAsUser securityContext. Default `2000`
   - `kube_version:` version of Kubernetes components. Default `1.13.12`

@@ -6,15 +6,17 @@
     dest: "/etc/ssl/kubernetes/{{ item.item }}"
     mode: 0644
   loop: "{{ hostvars[groups[masters_group_name][0]].k8s_ca_certificates.results }}"
+  when: item.item in ['ca.crt', 'ca.key', 'front-proxy-ca.crt']
   tags:
     - k8s_worker
 
-- name: Deploy frontproxy certificates certificates
+- name: Deploy frontproxy certificates
   copy:
     content: "{{ item.content | b64decode }}"
     dest: "/etc/ssl/kubernetes/{{ item.item }}"
     mode: 0644
   loop: "{{ hostvars[groups[masters_group_name][0]].frontproxy_certificates.results }}"
+  when: item.item in ['front-proxy-client.crt', 'front-proxy-client.key']
   tags:
     - k8s_worker
 

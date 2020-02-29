@@ -3,4 +3,4 @@
 - name: Setup Kubernetes Proxy
   hosts: "{{ groups[masters_group_name][0] }}"
   roles:
-    - kube_proxy
+    - k8s_proxy

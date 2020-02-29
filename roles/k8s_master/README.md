@@ -14,7 +14,6 @@
   - `kube_crt_state_or_province_name:` state or province name of certificate (ST). Default `Almaty`
   - `kube_crt_start_date:` certificate start date in ASN1 TIME format. Default `20190101000001Z`
   - `kube_crt_expire_date:` certificate expire date in ASN1 TIME format. Default `20291231235959Z`
-  - `kube_service_ip:` IP address of Kubernetes service. Default `172.30.0.1`
   - `etcd_group_name:` inventory name of ETCD group. Default `etcd`
   - `masters_group_name:` inventory name of Kubernetes masters group. Default `masters`
   - `kube_version:` version of Kubernetes components. Default `1.13.12`
