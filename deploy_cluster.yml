@@ -14,20 +14,8 @@
 # Generate and fetch certificates
 #
 
-- import_playbook: bootstrap/certificates/generate.yml
-- import_playbook: bootstrap/certificates/fetch.yml
-
-#
-# Deploy bootstrap token
-#
-
-- import_playbook: bootstrap/token/main.yml
-
-#
-# Deploy encryption key
-#
-
-- import_playbook: bootstrap/encryption/main.yml
+- import_playbook: certificates/generate.yml
+- import_playbook: certificates/fetch.yml
 
 #
 # Setup CoreOS ETCD 

@@ -1,0 +1,61 @@
+################################################################
+##                                                            ##
+## GENERATED FROM ANSIBLE TEMPLATE                            ##
+## DO NOT EDIT DIRECTLY                                       ##
+## YOUR CHANGES WILL BE OVERWRITEN WHEN NEXT ANSIBLE TASK RUN ##
+##                                                            ##
+################################################################
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+    kubernetes.certificate.start.date: "{{ kube_crt_start_date }}"
+    kubernetes.certificate.expire.date: "{{ kube_crt_expire_date }}"
+    prometheus.io/port: "10251"
+    prometheus.io/scrape: "true"
+  labels:
+    component: kube-scheduler
+    tier: control-plane
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-scheduler
+    - --config=/srv/kubernetes/kube-scheduler.yaml
+    - --leader-elect=true
+    image: k8s.gcr.io/kube-scheduler:v1.13.1
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10251
+        scheme: HTTP
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: kube-scheduler
+    resources:
+      requests:
+        cpu: 100m
+    volumeMounts:
+    - mountPath: /srv/kubernetes
+      name: srvkube
+      readOnly: true
+    ports:
+    - containerPort: 10251
+      name: plain
+      protocol: TCP
+    - containerPort: 10259
+      name: secure
+      protocol: TCP
+  hostNetwork: true
+  priorityClassName: system-cluster-critical
+  volumes:
+  - hostPath:
+      path: /var/lib/kubernetes
+      type: "DirectoryOrCreate"
+    name: srvkube

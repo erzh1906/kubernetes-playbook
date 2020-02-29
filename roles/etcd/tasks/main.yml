@@ -57,7 +57,7 @@
 
 - name: Upload ETCD configuration
   template:
-    src: etcd-{{ etcd_version.split(".")[:2] | join(".") }}.conf
+    src: etcd-{{ etcd_version.split('.')[:2] | join('.') }}.conf
     dest: /etc/etcd/etcd.conf
   notify: restart etcd
   tags:
@@ -65,7 +65,7 @@
 
 - name: Upload systemd unit file
   copy:
-    src: etcd-{{ etcd_version.split(".")[:2] | join(".") }}.service
+    src: etcd-{{ etcd_version.split('.')[:2] | join('.') }}.service
     dest: /etc/systemd/system/etcd.service
   notify: restart etcd
   tags:

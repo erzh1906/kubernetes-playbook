@@ -2,7 +2,7 @@
 
 - name: Upload Kubernetes Proxy manifest
   template:
-    src: kube-proxy-{{ kube_version }}.yaml
+    src: "{{ kube_version.split('.')[:2] | join('.') }}/kube-proxy-{{ kube_version }}.yaml"
     dest: /root/kube-proxy-{{ kube_version }}.yaml
     backup: yes
   tags:

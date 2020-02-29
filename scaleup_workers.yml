@@ -14,7 +14,7 @@
 # Fetch certificates
 #
 
-- import_playbook: bootstrap/certificates/fetch.yml
+- import_playbook: certificates/fetch.yml
 
 #
 # Deploy core components and setup Kubernetes nodes

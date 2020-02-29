@@ -47,6 +47,7 @@
       - kubelet-{{ kube_version }}-0.x86_64
       - cri-tools
     state: present
+  notify: restart kubelet
   tags:
     - k8s_worker
 
