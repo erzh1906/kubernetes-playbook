@@ -10,10 +10,3 @@
     - kube-controller-manager
   tags:
     - k8s_master
-
-- name: Upload kube-scheduler configuration
-  copy:
-    src: "{{ kube_version.split('.')[:2] | join('.') }}/kube-scheduler-{{ kube_version }}.yaml"
-    dest: /etc/kubernetes/config/kube-scheduler.yaml
-  tags:
-    - k8s_master

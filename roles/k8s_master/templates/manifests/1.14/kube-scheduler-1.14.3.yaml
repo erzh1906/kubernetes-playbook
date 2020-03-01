@@ -24,7 +24,7 @@ spec:
   containers:
   - command:
     - kube-scheduler
-    - --config=/etc/kubernetes/config/kube-scheduler.yaml
+    - --kubeconfig=/etc/kubernetes/config/kube-scheduler.kubeconfig
     - --leader-elect=true
     image: k8s.gcr.io/kube-scheduler:v1.14.3
     imagePullPolicy: IfNotPresent
