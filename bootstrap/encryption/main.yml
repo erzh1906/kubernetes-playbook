@@ -1,6 +1,0 @@
----
-
-- name: Deploy encryption key
-  hosts: "{{ groups[masters_group_name] }}"
-  roles:
-    - k8s_encryption

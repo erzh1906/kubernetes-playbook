@@ -2,7 +2,7 @@
 
 - name: Generate private keys for frontproxy related certificates
   openssl_privatekey:
-    path: "/etc/ssl/kubernetes/{{ item }}"
+    path: "/etc/kubernetes/pki/{{ item }}"
     size: 2048
     mode: 0644
     backup: yes
@@ -13,8 +13,8 @@
 
 - name: Generate CSR for frontproxy client certificate
   openssl_csr:
-    path: /etc/ssl/kubernetes/front-proxy-client.csr
-    privatekey_path: /etc/ssl/kubernetes/front-proxy-client.key
+    path: /etc/kubernetes/pki/front-proxy-client.csr
+    privatekey_path: /etc/kubernetes/pki/front-proxy-client.key
     common_name: front-proxy-client
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -38,12 +38,12 @@
 
 - name: Generate certificate for frontproxy client
   openssl_certificate:
-    path: /etc/ssl/kubernetes/front-proxy-client.crt
-    privatekey_path: /etc/ssl/kubernetes/front-proxy-client.key
-    csr_path: /etc/ssl/kubernetes/front-proxy-client.csr
+    path: /etc/kubernetes/pki/front-proxy-client.crt
+    privatekey_path: /etc/kubernetes/pki/front-proxy-client.key
+    csr_path: /etc/kubernetes/pki/front-proxy-client.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/front-proxy-ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/front-proxy-ca.key
+    ownca_path: /etc/kubernetes/pki/front-proxy-ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/front-proxy-ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644

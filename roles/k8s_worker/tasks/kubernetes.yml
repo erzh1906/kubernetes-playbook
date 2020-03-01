@@ -1,0 +1,68 @@
+---
+
+- name: Create group for pods runAsGroup securityContext
+  group:
+    name: kubegroup
+    gid: "{{ kube_gid }}"
+    state: present
+  tags:
+    - k8s_worker
+
+- name: Create user for pods runAsUser securityContext
+  user:
+    name: kubeuser
+    shell: /bin/bash
+    group: kubegroup
+    uid: "{{ kube_uid }}"
+  tags:
+    - k8s_worker
+
+- name: Create directories for Kubernetes
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /var/lib/kubelet
+    - /etc/kubernetes/config
+  tags:
+    - k8s_worker
+
+- name: Add kubernetes repository
+  yum_repository:
+    name: kubernetes
+    description: "Kubernetes"
+    file: kubernetes
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    gpgcheck: yes
+    repo_gpgcheck: yes
+    enabled: yes
+  tags:
+    - k8s_worker
+
+- name: Install kubelet, kubectl and cri-tools
+  yum:
+    name:
+      - kubelet-{{ kube_version }}-0.x86_64
+      - cri-tools
+    state: present
+  notify: restart kubelet
+  tags:
+    - k8s_worker
+
+- name: Upload crictl configuration
+  copy:
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+  tags:
+    - k8s_worker
+
+- name: Start and enable kubelet
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - k8s_worker

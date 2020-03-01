@@ -2,7 +2,7 @@
 
 - name: Fetch generated CA certificates and keys
   slurp:
-    src: "/etc/ssl/kubernetes/{{ item }}"
+    src: "/etc/kubernetes/pki/{{ item }}"
   register: k8s_ca_certificates
   loop:
     - ca.crt
@@ -21,7 +21,7 @@
 
 - name: Fetch ETCD certificates and keys
   slurp:
-    src: "/etc/ssl/kubernetes/{{ item }}"
+    src: "/etc/kubernetes/pki/{{ item }}"
   register: etcd_certificates
   loop:
     - etcd/ca.crt
@@ -44,7 +44,7 @@
 
 - name: Fetch frontproxy certificates and keys
   slurp:
-    src: "/etc/ssl/kubernetes/{{ item }}"
+    src: "/etc/kubernetes/pki/{{ item }}"
   register: frontproxy_certificates
   loop:
     - front-proxy-client.crt

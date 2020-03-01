@@ -3,7 +3,7 @@
 - name: Deploy CA certificates
   copy:
     content: "{{ item.content | b64decode }}"
-    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    dest: "/etc/kubernetes/pki/{{ item.item }}"
     mode: 0644
   loop: "{{ hostvars[groups[masters_group_name][0]].k8s_ca_certificates.results }}"
   tags:
@@ -12,7 +12,7 @@
 - name: Deploy ETCD certificates
   copy:
     content: "{{ item.content | b64decode }}"
-    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    dest: "/etc/kubernetes/pki/{{ item.item }}"
     mode: 0644
   loop: "{{ hostvars[groups[masters_group_name][0]].etcd_certificates.results }}"
   tags:
@@ -21,7 +21,7 @@
 - name: Deploy CA certificates
   copy:
     content: "{{ item.content | b64decode }}"
-    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    dest: "/etc/kubernetes/pki/{{ item.item }}"
     mode: 0644
   loop: "{{ hostvars[groups[masters_group_name][0]].frontproxy_certificates.results }}"
   tags:
@@ -57,7 +57,7 @@
 
 - name: Generate private keys for Kubernetes related certificates
   openssl_privatekey:
-    path: "/etc/ssl/kubernetes/{{ item }}"
+    path: "/etc/kubernetes/pki/{{ item }}"
     size: 2048
     mode: 0644
     backup: yes
@@ -73,8 +73,8 @@
 
 - name: Generate CSR for Kubernetes API server certificate
   openssl_csr:
-    path: /etc/ssl/kubernetes/apiserver.csr
-    privatekey_path: /etc/ssl/kubernetes/apiserver.key
+    path: /etc/kubernetes/pki/apiserver.csr
+    privatekey_path: /etc/kubernetes/pki/apiserver.key
     common_name: kube-apiserver
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -99,12 +99,12 @@
 
 - name: Generate certificate for Kubernetes API server
   openssl_certificate:
-    path: /etc/ssl/kubernetes/apiserver.crt
-    privatekey_path: /etc/ssl/kubernetes/apiserver.key
-    csr_path: /etc/ssl/kubernetes/apiserver.csr
+    path: /etc/kubernetes/pki/apiserver.crt
+    privatekey_path: /etc/kubernetes/pki/apiserver.key
+    csr_path: /etc/kubernetes/pki/apiserver.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644
@@ -114,8 +114,8 @@
 
 - name: Generate CSR for Kubernetes API server Kubelet client certificate
   openssl_csr:
-    path: /etc/ssl/kubernetes/apiserver-kubelet-client.csr
-    privatekey_path: /etc/ssl/kubernetes/apiserver-kubelet-client.key
+    path: /etc/kubernetes/pki/apiserver-kubelet-client.csr
+    privatekey_path: /etc/kubernetes/pki/apiserver-kubelet-client.key
     common_name: kube-apiserver-kubelet-client
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -139,12 +139,12 @@
 
 - name: Generate client certificate for Kubernetes API server Kubelet
   openssl_certificate:
-    path: /etc/ssl/kubernetes/apiserver-kubelet-client.crt
-    privatekey_path: /etc/ssl/kubernetes/apiserver-kubelet-client.key
-    csr_path: /etc/ssl/kubernetes/apiserver-kubelet-client.csr
+    path: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+    privatekey_path: /etc/kubernetes/pki/apiserver-kubelet-client.key
+    csr_path: /etc/kubernetes/pki/apiserver-kubelet-client.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644
@@ -154,8 +154,8 @@
 
 - name: Generate CSR for Kubernetes Controller Manager certificate
   openssl_csr:
-    path: /etc/ssl/kubernetes/controller-manager.csr
-    privatekey_path: /etc/ssl/kubernetes/controller-manager.key
+    path: /etc/kubernetes/pki/controller-manager.csr
+    privatekey_path: /etc/kubernetes/pki/controller-manager.key
     common_name: "system:kube-controller-manager"
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -180,12 +180,12 @@
 
 - name: Generate certificate for Kubernetes Controller Manager
   openssl_certificate:
-    path: /etc/ssl/kubernetes/controller-manager.crt
-    privatekey_path: /etc/ssl/kubernetes/controller-manager.key
-    csr_path: /etc/ssl/kubernetes/controller-manager.csr
+    path: /etc/kubernetes/pki/controller-manager.crt
+    privatekey_path: /etc/kubernetes/pki/controller-manager.key
+    csr_path: /etc/kubernetes/pki/controller-manager.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644
@@ -195,8 +195,8 @@
 
 - name: Generate CSR for Kubernetes Scheduler certificate
   openssl_csr:
-    path: /etc/ssl/kubernetes/scheduler.csr
-    privatekey_path: /etc/ssl/kubernetes/scheduler.key
+    path: /etc/kubernetes/pki/scheduler.csr
+    privatekey_path: /etc/kubernetes/pki/scheduler.key
     common_name: "system:kube-scheduler"
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -221,12 +221,12 @@
 
 - name: Generate certificate for Kubernetes Scheduler
   openssl_certificate:
-    path: /etc/ssl/kubernetes/scheduler.crt
-    privatekey_path: /etc/ssl/kubernetes/scheduler.key
-    csr_path: /etc/ssl/kubernetes/scheduler.csr
+    path: /etc/kubernetes/pki/scheduler.crt
+    privatekey_path: /etc/kubernetes/pki/scheduler.key
+    csr_path: /etc/kubernetes/pki/scheduler.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644
@@ -236,8 +236,8 @@
 
 - name: Generate CSR for Kubernetes admin certificate
   openssl_csr:
-    path: /etc/ssl/kubernetes/admin.csr
-    privatekey_path: /etc/ssl/kubernetes/admin.key
+    path: /etc/kubernetes/pki/admin.csr
+    privatekey_path: /etc/kubernetes/pki/admin.key
     common_name: "kubernetes-admin"
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -262,12 +262,12 @@
 
 - name: Generate certificate for Kubernetes admin
   openssl_certificate:
-    path: /etc/ssl/kubernetes/admin.crt
-    privatekey_path: /etc/ssl/kubernetes/admin.key
-    csr_path: /etc/ssl/kubernetes/admin.csr
+    path: /etc/kubernetes/pki/admin.crt
+    privatekey_path: /etc/kubernetes/pki/admin.key
+    csr_path: /etc/kubernetes/pki/admin.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644
@@ -277,8 +277,8 @@
 
 - name: Generate CSR for Kubernetes Proxy certificate
   openssl_csr:
-    path: /etc/ssl/kubernetes/kube-proxy.csr
-    privatekey_path: /etc/ssl/kubernetes/kube-proxy.key
+    path: /etc/kubernetes/pki/kube-proxy.csr
+    privatekey_path: /etc/kubernetes/pki/kube-proxy.key
     common_name: "system:kube-proxy"
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -303,12 +303,12 @@
 
 - name: Generate certificate for Kubernetes Proxy
   openssl_certificate:
-    path: /etc/ssl/kubernetes/kube-proxy.crt
-    privatekey_path: /etc/ssl/kubernetes/kube-proxy.key
-    csr_path: /etc/ssl/kubernetes/kube-proxy.csr
+    path: /etc/kubernetes/pki/kube-proxy.crt
+    privatekey_path: /etc/kubernetes/pki/kube-proxy.key
+    csr_path: /etc/kubernetes/pki/kube-proxy.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644
@@ -318,7 +318,7 @@
 
 - name: Generate private key for kubelet
   openssl_privatekey:
-    path: "/etc/ssl/kubernetes/{{ ansible_nodename }}.key"
+    path: "/etc/kubernetes/pki/{{ ansible_nodename }}.key"
     size: 2048
     mode: 0644
     backup: yes
@@ -327,8 +327,8 @@
 
 - name: Generate CSR for kubelet
   openssl_csr:
-    path: /etc/ssl/kubernetes/{{ ansible_nodename }}.csr
-    privatekey_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.key
+    path: /etc/kubernetes/pki/{{ ansible_nodename }}.csr
+    privatekey_path: /etc/kubernetes/pki/{{ ansible_nodename }}.key
     common_name: "system:node:{{ ansible_nodename }}"
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -354,12 +354,12 @@
 
 - name: Generate certificate for kubelet
   openssl_certificate:
-    path: /etc/ssl/kubernetes/{{ ansible_nodename }}.crt
-    privatekey_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.key
-    csr_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.csr
+    path: /etc/kubernetes/pki/{{ ansible_nodename }}.crt
+    privatekey_path: /etc/kubernetes/pki/{{ ansible_nodename }}.key
+    csr_path: /etc/kubernetes/pki/{{ ansible_nodename }}.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644

@@ -61,13 +61,13 @@
   tags:
     - software
 
-- name: Create directory for certificates
+- name: Create directories for certificates
   file:
     path: "{{ item }}"
     state: directory
     mode: 0755
   loop:
-    - /etc/ssl/kubernetes
-    - /etc/ssl/kubernetes/etcd
+    - /etc/kubernetes/pki
+    - /etc/kubernetes/pki/etcd
   tags:
     - software

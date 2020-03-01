@@ -1,0 +1,11 @@
+################################################################
+##                                                            ##
+## GENERATED FROM ANSIBLE TEMPLATE                            ##
+## DO NOT EDIT DIRECTLY                                       ##
+## YOUR CHANGES WILL BE OVERWRITEN WHEN NEXT ANSIBLE TASK RUN ##
+##                                                            ##
+################################################################
+runtime-endpoint: unix:///var/run/containerd/containerd.sock
+image-endpoint: unix:///var/run/containerd/containerd.sock
+timeout: 10
+debug: false

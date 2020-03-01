@@ -4,11 +4,3 @@
   hosts: "{{ groups[workers_group_name] + groups[masters_group_name] + groups[etcd_group_name]}}"
   roles:
     - k8s_software
-
-- name: Modify kernel, install runtime and Kubernetes packages on Kubernetes nodes
-  hosts: "{{ groups[workers_group_name] + groups[masters_group_name] }}"
-  roles:
-    - k8s_kernel
-    - containerd
-    - kubernetes
-    - k8s_nginx

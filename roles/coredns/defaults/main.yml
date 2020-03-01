@@ -2,4 +2,4 @@
 
 coredns_version: 1.5.0
 coredns_replica_count: 4
-coredns_service_ip: 172.30.0.10
+coredns_service_ip: 10.96.0.10

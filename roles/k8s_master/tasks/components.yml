@@ -2,19 +2,11 @@
 
 - name: Upload Kubernetes manifests for master node
   template:
-    src: "manifests/{{ item }}"
-    dest: "/etc/kubernetes/manifests/{{ item }}"
+    src: "manifests/{{ kube_version.split('.')[:2] | join('.') }}/{{ item }}-{{ kube_version }}.yaml"
+    dest: "/etc/kubernetes/manifests/{{ item }}.yaml"
   loop:
-    - kube-apiserver.yaml
-    - kube-scheduler.yaml
-    - kube-controller-manager.yaml
-    - kube-proxy.yaml
-  tags:
-    - k8s_master
-
-- name: Upload kube-scheduler.yaml
-  copy:
-    src: kube-scheduler.yaml
-    dest: /var/lib/kubernetes/kube-scheduler.yaml
+    - kube-apiserver
+    - kube-scheduler
+    - kube-controller-manager
   tags:
     - k8s_master

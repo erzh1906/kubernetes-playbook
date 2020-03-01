@@ -3,6 +3,8 @@
 
 **Variables:**
 
+  - `kube_gid:` Linux group ID for pods runAsGroup securityContext. Default `2000`
+  - `kube_uid:` Linux user ID for pods runAsUser securityContext. Default `2000`
   - `kube_crt_country_name:` country name of certificate (C). Default `KZ`
   - `kube_crt_locality_name:` locality name of certificate (L). Default `Almaty`
   - `kube_crt_organization_name:` organization name of certificate (O). Default `Aviata LLC`
@@ -14,7 +16,7 @@
   - `kube_bootstrap_token:` Kubernetes bootstrap token. Default `a90d81632f0d19718e2d24ab1d4df117`
   - `kube_version:` version of Kubernetes components. Default `1.13.12`
   - `cluster_dns_type:` DNS server type for cluster. Can be `coredns` or `nodelocaldns`. Default `coredns`
-  - `coredns_service_ip:` IP address of CoreDNS service. Default `172.30.0.10`
+  - `coredns_service_ip:` IP address of CoreDNS service. Default `10.96.0.10`
   - `nodelocaldns_ip:` IP address of NodeLocalDNS cache. Default `169.254.25.10`  
 
 **Notes:**

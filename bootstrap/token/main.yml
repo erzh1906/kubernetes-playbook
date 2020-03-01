@@ -1,6 +1,0 @@
----
-
-- name: Deploy bootstrap token
-  hosts: "{{ groups[masters_group_name] }}"
-  roles:
-    - k8s_bootstrap_token

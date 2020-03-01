@@ -11,24 +11,14 @@
       {{ coredns_service_ip }}
       {%- endif -%}
 
+- include: kubernetes.yml
 - include: certificates.yml
 - include: kubeconfigs.yml
-- include: components.yml
 - include: kubelet.yml
 
-- name: Remove temporary files
+- name: Remove CA private key file
   file:
-    path: "/etc/ssl/kubernetes/{{ item }}"
+    path: /etc/kubernetes/pki/ca.key
     state: absent
-  loop:
-    - ca.csr
-    - ca.key
-    - front-proxy-ca.csr
-    - front-proxy-ca.key
-    - sa.crt
-    - sa.key
-    - etcd/ca.crt
-    - etcd/ca.key
-    - etcd/ca.csr
   tags:
     - k8s_worker
