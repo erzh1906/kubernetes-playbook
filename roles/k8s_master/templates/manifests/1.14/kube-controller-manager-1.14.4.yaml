@@ -25,17 +25,17 @@ spec:
   - command:
     - kube-controller-manager
     - --address=0.0.0.0
-    - --authentication-kubeconfig=/srv/kubernetes/kube-controller-manager.kubeconfig
-    - --authorization-kubeconfig=/srv/kubernetes/kube-controller-manager.kubeconfig
-    - --client-ca-file=/etc/ssl/kubernetes/ca.crt
-    - --cluster-signing-cert-file=/etc/ssl/kubernetes/ca.crt
-    - --cluster-signing-key-file=/etc/ssl/kubernetes/ca.key
+    - --authentication-kubeconfig=/etc/kubernetes/config/kube-controller-manager.kubeconfig
+    - --authorization-kubeconfig=/etc/kubernetes/config/kube-controller-manager.kubeconfig
+    - --client-ca-file=/etc/kubernetes/pki/ca.crt
+    - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
+    - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
     - --controllers=*,bootstrapsigner,tokencleaner
-    - --kubeconfig=/srv/kubernetes/kube-controller-manager.kubeconfig
+    - --kubeconfig=/etc/kubernetes/config/kube-controller-manager.kubeconfig
     - --leader-elect=true
-    - --requestheader-client-ca-file=/etc/ssl/kubernetes/front-proxy-ca.crt
-    - --root-ca-file=/etc/ssl/kubernetes/ca.crt
-    - --service-account-private-key-file=/etc/ssl/kubernetes/sa.key
+    - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
+    - --root-ca-file=/etc/kubernetes/pki/ca.crt
+    - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
     - --use-service-account-credentials=true
 {% if kube_cni_type == "flannel" %}
     - --allocate-node-cidrs=true
@@ -58,11 +58,11 @@ spec:
       requests:
         cpu: 200m
     volumeMounts:
-    - mountPath: /srv/kubernetes
-      name: srvkube
+    - mountPath: /etc/kubernetes/config
+      name: k8s-config
       readOnly: true
-    - mountPath: /etc/ssl
-      name: etcssl
+    - mountPath: /etc/kubernetes/pki
+      name: k8s-certs
       readOnly: true
     ports:
     - containerPort: 10252
@@ -75,10 +75,10 @@ spec:
   priorityClassName: system-cluster-critical
   volumes:
   - hostPath:
-      path: /var/lib/kubernetes
+      path: /etc/kubernetes/config
       type: "DirectoryOrCreate"
-    name: srvkube
+    name: k8s-config
   - hostPath:
-      path: /etc/ssl
+      path: /etc/kubernetes/pki
       type: "DirectoryOrCreate"
-    name: etcssl
+    name: k8s-certs

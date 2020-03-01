@@ -24,7 +24,7 @@
     mode: 0755
   loop:
     - /var/lib/kubelet
-    - /var/lib/kubernetes
+    - /etc/kubernetes/config
   tags:
     - k8s_worker
 

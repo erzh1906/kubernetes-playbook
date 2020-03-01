@@ -25,33 +25,33 @@ spec:
     - --authorization-mode=Node,RBAC
     - --advertise-address={{ ansible_default_ipv4.address }}
     - --allow-privileged=true
-    - --client-ca-file=/etc/ssl/kubernetes/ca.crt
+    - --client-ca-file=/etc/kubernetes/pki/ca.crt
     - --enable-admission-plugins=NodeRestriction
     - --enable-bootstrap-token-auth=true
-    - --etcd-cafile=/etc/ssl/kubernetes/etcd/ca.crt
-    - --etcd-certfile=/etc/ssl/kubernetes/apiserver-etcd-client.crt
-    - --etcd-keyfile=/etc/ssl/kubernetes/apiserver-etcd-client.key
+    - --etcd-cafile=/etc/kubernetes/pki/etcd/ca.crt
+    - --etcd-certfile=/etc/kubernetes/pki/apiserver-etcd-client.crt
+    - --etcd-keyfile=/etc/kubernetes/pki/apiserver-etcd-client.key
     - --etcd-servers={% for item in groups[etcd_group_name] %}https://{{ hostvars[item]['ansible_default_ipv4']['address'] }}:2379{% if not loop.last %},{% endif %}{% endfor %}
     - --insecure-port=0
-    - --kubelet-client-certificate=/etc/ssl/kubernetes/apiserver-kubelet-client.crt
-    - --kubelet-client-key=/etc/ssl/kubernetes/apiserver-kubelet-client.key
+    - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
+    - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
-    - --proxy-client-cert-file=/etc/ssl/kubernetes/front-proxy-client.crt
-    - --proxy-client-key-file=/etc/ssl/kubernetes/front-proxy-client.key
+    - --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt
+    - --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key
     - --requestheader-allowed-names=front-proxy-client
-    - --requestheader-client-ca-file=/etc/ssl/kubernetes/front-proxy-ca.crt
+    - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
     - --requestheader-extra-headers-prefix=X-Remote-Extra-
     - --requestheader-group-headers=X-Remote-Group
     - --requestheader-username-headers=X-Remote-User
     - --secure-port=6443
-    - --service-account-key-file=/etc/ssl/kubernetes/sa.crt
+    - --service-account-key-file=/etc/kubernetes/pki/sa.crt
     - --service-cluster-ip-range={{ kube_service_cluster_ip_range }}
-    - --tls-cert-file=/etc/ssl/kubernetes/apiserver.crt
-    - --tls-private-key-file=/etc/ssl/kubernetes/apiserver.key
+    - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
+    - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
     - --anonymous-auth=false
-    - --encryption-provider-config=/srv/kubernetes/encryption-config.yaml
-    - --kubelet-certificate-authority=/etc/ssl/kubernetes/ca.crt
-    - --token-auth-file=/etc/ssl/kubernetes/bootstrap.token
+    - --encryption-provider-config=/etc/kubernetes/config/encryption-config.yaml
+    - --kubelet-certificate-authority=/etc/kubernetes/pki/ca.crt
+    - --token-auth-file=/etc/kubernetes/pki/bootstrap.token
     image: k8s.gcr.io/kube-apiserver:v1.14.8
     imagePullPolicy: IfNotPresent
     livenessProbe:
@@ -65,11 +65,11 @@ spec:
       requests:
         cpu: 250m
     volumeMounts:
-    - mountPath: /srv/kubernetes
-      name: srvkube
+    - mountPath: /etc/kubernetes/config
+      name: k8s-config
       readOnly: true
-    - mountPath: /etc/ssl
-      name: etcssl
+    - mountPath: /etc/kubernetes/pki
+      name: k8s-certs
       readOnly: true
     ports:
     - containerPort: 6443
@@ -81,10 +81,10 @@ spec:
   securityContext: {}
   volumes:
   - hostPath:
-      path: /var/lib/kubernetes
+      path: /etc/kubernetes/config
       type: "DirectoryOrCreate"
-    name: srvkube
+    name: k8s-config
   - hostPath:
-      path: /etc/ssl
+      path: /etc/kubernetes/pki
       type: "DirectoryOrCreate"
-    name: etcssl
+    name: k8s-certs

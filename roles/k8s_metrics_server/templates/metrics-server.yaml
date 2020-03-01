@@ -80,17 +80,17 @@ spec:
       volumes:
       - name: tmp-dir
         emptyDir: {}
-      - name: etcssl
+      - name: k8s-certs
         hostPath:
-          path: /etc/ssl
+          path: /etc/kubernetes/pki
       containers:
       - name: metrics-server
         image: k8s.gcr.io/metrics-server-amd64:v{{ metrics_server_version }}
         command:
         - /metrics-server
-        - --client-ca-file=/etc/ssl/kubernetes/ca.crt
+        - --client-ca-file=/etc/kubernetes/pki/ca.crt
         - --requestheader-allowed-names=front-proxy-client
-        - --requestheader-client-ca-file=/etc/ssl/kubernetes/front-proxy-ca.crt
+        - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
         - --requestheader-extra-headers-prefix=X-Remote-Extra-
         - --requestheader-group-headers=X-Remote-Group
         - --requestheader-username-headers=X-Remote-User
@@ -98,8 +98,8 @@ spec:
         volumeMounts:
         - name: tmp-dir
           mountPath: /tmp
-        - name: etcssl
-          mountPath: /etc/ssl
+        - name: k8s-certs
+          mountPath: /etc/kubernetes/pki
           readOnly: true
 ---
 apiVersion: v1

@@ -3,7 +3,7 @@
 - name: Deploy CA certificates
   copy:
     content: "{{ item.content | b64decode }}"
-    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    dest: "/etc/kubernetes/pki/{{ item.item }}"
     mode: 0644
   loop: "{{ hostvars[groups[masters_group_name][0]].k8s_ca_certificates.results }}"
   when: item.item in ['ca.crt', 'ca.key', 'front-proxy-ca.crt']
@@ -13,7 +13,7 @@
 - name: Deploy frontproxy certificates
   copy:
     content: "{{ item.content | b64decode }}"
-    dest: "/etc/ssl/kubernetes/{{ item.item }}"
+    dest: "/etc/kubernetes/pki/{{ item.item }}"
     mode: 0644
   loop: "{{ hostvars[groups[masters_group_name][0]].frontproxy_certificates.results }}"
   when: item.item in ['front-proxy-client.crt', 'front-proxy-client.key']
@@ -22,7 +22,7 @@
 
 - name: Generate private key for kubelet
   openssl_privatekey:
-    path: "/etc/ssl/kubernetes/{{ ansible_nodename }}.key"
+    path: "/etc/kubernetes/pki/{{ ansible_nodename }}.key"
     size: 2048
     mode: 0644
     backup: yes
@@ -31,8 +31,8 @@
 
 - name: Generate CSR for kubelet
   openssl_csr:
-    path: /etc/ssl/kubernetes/{{ ansible_nodename }}.csr
-    privatekey_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.key
+    path: /etc/kubernetes/pki/{{ ansible_nodename }}.csr
+    privatekey_path: /etc/kubernetes/pki/{{ ansible_nodename }}.key
     common_name: "system:node:{{ ansible_nodename }}"
     country_name: "{{ kube_crt_country_name }}"
     locality_name: "{{ kube_crt_locality_name }}"
@@ -58,12 +58,12 @@
 
 - name: Generate certificate for kubelet
   openssl_certificate:
-    path: /etc/ssl/kubernetes/{{ ansible_nodename }}.crt
-    privatekey_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.key
-    csr_path: /etc/ssl/kubernetes/{{ ansible_nodename }}.csr
+    path: /etc/kubernetes/pki/{{ ansible_nodename }}.crt
+    privatekey_path: /etc/kubernetes/pki/{{ ansible_nodename }}.key
+    csr_path: /etc/kubernetes/pki/{{ ansible_nodename }}.csr
     provider: ownca
-    ownca_path: /etc/ssl/kubernetes/ca.crt
-    ownca_privatekey_path: /etc/ssl/kubernetes/ca.key
+    ownca_path: /etc/kubernetes/pki/ca.crt
+    ownca_privatekey_path: /etc/kubernetes/pki/ca.key
     ownca_not_before: "{{ kube_crt_start_date }}"
     ownca_not_after: "{{ kube_crt_expire_date }}"
     mode: 0644

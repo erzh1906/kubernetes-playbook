@@ -24,7 +24,7 @@ spec:
   containers:
   - command:
     - kube-scheduler
-    - --config=/srv/kubernetes/kube-scheduler.yaml
+    - --config=/etc/kubernetes/config/kube-scheduler.yaml
     - --leader-elect=true
     image: k8s.gcr.io/kube-scheduler:v1.14.8
     imagePullPolicy: IfNotPresent
@@ -42,8 +42,8 @@ spec:
       requests:
         cpu: 100m
     volumeMounts:
-    - mountPath: /srv/kubernetes
-      name: srvkube
+    - mountPath: /etc/kubernetes/config
+      name: k8s-config
       readOnly: true
     ports:
     - containerPort: 10251
@@ -56,6 +56,6 @@ spec:
   priorityClassName: system-cluster-critical
   volumes:
   - hostPath:
-      path: /var/lib/kubernetes
+      path: /etc/kubernetes/config
       type: "DirectoryOrCreate"
-    name: srvkube
+    name: k8s-config

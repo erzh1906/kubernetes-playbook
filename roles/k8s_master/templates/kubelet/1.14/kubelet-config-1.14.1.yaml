@@ -7,7 +7,7 @@ authentication:
     cacheTTL: 2m0s
     enabled: true
   x509:
-    clientCAFile: /etc/ssl/kubernetes/ca.crt
+    clientCAFile: /etc/kubernetes/pki/ca.crt
 authorization:
   mode: Webhook
   webhook:
@@ -71,5 +71,5 @@ staticPodPath: /etc/kubernetes/manifests
 streamingConnectionIdleTimeout: 4h0m0s
 syncFrequency: 1m0s
 volumeStatsAggPeriod: 1m0s
-tlsCertFile: "/etc/ssl/kubernetes/{{ ansible_nodename }}.crt"
-tlsPrivateKeyFile: "/etc/ssl/kubernetes/{{ ansible_nodename }}.key"
+tlsCertFile: "/etc/kubernetes/pki/{{ ansible_nodename }}.crt"
+tlsPrivateKeyFile: "/etc/kubernetes/pki/{{ ansible_nodename }}.key"

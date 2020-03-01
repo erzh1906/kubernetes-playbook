@@ -18,7 +18,7 @@
 
 - name: Remove CA private key file
   file:
-    path: /etc/ssl/kubernetes/ca.key
+    path: /etc/kubernetes/pki/ca.key
     state: absent
   tags:
     - k8s_worker

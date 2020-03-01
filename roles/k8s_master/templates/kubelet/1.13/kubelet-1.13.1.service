@@ -14,7 +14,7 @@ Requires=containerd.service
 
 [Service]
 ExecStart=/usr/bin/kubelet \
-  --kubeconfig=/var/lib/kubernetes/{{ ansible_nodename }}.kubeconfig \
+  --kubeconfig=/etc/kubernetes/config/{{ ansible_nodename }}.kubeconfig \
   --config=/var/lib/kubelet/kubelet-config.yaml \
   --container-runtime=remote \
   --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \
