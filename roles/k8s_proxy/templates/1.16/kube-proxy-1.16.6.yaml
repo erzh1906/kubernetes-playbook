@@ -49,7 +49,6 @@ data:
     nodePortAddresses: null
     oomScoreAdj: -999
     portRange: ""
-    resourceContainer: /kube-proxy
     udpIdleTimeout: 250ms
     winkernel:
       enableDSR: false
@@ -107,7 +106,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        image: k8s.gcr.io/kube-proxy:v1.15.6
+        image: k8s.gcr.io/kube-proxy:v1.16.6
         imagePullPolicy: IfNotPresent
         name: kube-proxy
         resources: {}
