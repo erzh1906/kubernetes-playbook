@@ -1,0 +1,84 @@
+################################################################
+##                                                            ##
+## GENERATED FROM ANSIBLE TEMPLATE                            ##
+## DO NOT EDIT DIRECTLY                                       ##
+## YOUR CHANGES WILL BE OVERWRITEN WHEN NEXT ANSIBLE TASK RUN ##
+##                                                            ##
+################################################################
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+    kubernetes.certificate.start.date: "{{ kube_crt_start_date }}"
+    kubernetes.certificate.expire.date: "{{ kube_crt_expire_date }}"
+    prometheus.io/port: "10252"
+    prometheus.io/scrape: "true"
+  labels:
+    component: kube-controller-manager
+    tier: control-plane
+  name: kube-controller-manager
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-controller-manager
+    - --bind-address=0.0.0.0
+    - --authentication-kubeconfig=/etc/kubernetes/config/kube-controller-manager.kubeconfig
+    - --authorization-kubeconfig=/etc/kubernetes/config/kube-controller-manager.kubeconfig
+    - --client-ca-file=/etc/kubernetes/pki/ca.crt
+    - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
+    - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
+    - --controllers=*,bootstrapsigner,tokencleaner
+    - --kubeconfig=/etc/kubernetes/config/kube-controller-manager.kubeconfig
+    - --leader-elect=true
+    - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
+    - --root-ca-file=/etc/kubernetes/pki/ca.crt
+    - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
+    - --use-service-account-credentials=true
+{% if kube_cni_type == "flannel" %}
+    - --allocate-node-cidrs=true
+    - --cluster-cidr={{ kube_pod_ip_range }}
+    - --node-cidr-mask-size=24
+{% endif %}
+    image: k8s.gcr.io/kube-controller-manager:v1.15.4
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10252
+        scheme: HTTP
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: kube-controller-manager
+    resources:
+      requests:
+        cpu: 200m
+    volumeMounts:
+    - mountPath: /etc/kubernetes/config
+      name: k8s-config
+      readOnly: true
+    - mountPath: /etc/kubernetes/pki
+      name: k8s-certs
+      readOnly: true
+    ports:
+    - containerPort: 10252
+      name: plain
+      protocol: TCP
+    - containerPort: 10257
+      name: secure
+      protocol: TCP
+  hostNetwork: true
+  priorityClassName: system-cluster-critical
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/config
+      type: "DirectoryOrCreate"
+    name: k8s-config
+  - hostPath:
+      path: /etc/kubernetes/pki
+      type: "DirectoryOrCreate"
+    name: k8s-certs
