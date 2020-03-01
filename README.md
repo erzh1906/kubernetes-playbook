@@ -1,6 +1,6 @@
 ![Kubernetes Logo](https://raw.githubusercontent.com/kubernetes-sigs/kubespray/master/docs/img/kubernetes-logo.png)
 
-# Deploy a Production Ready Kubernetes 1.13 Baremetal Cluster (Hardway like)
+# Deploy a Production Ready Kubernetes 1.13.0 - 1.16.7 Baremetal Cluster (Hardway like)
 
 -   **Highly available** cluster
 -   **ContainerD** runtime
