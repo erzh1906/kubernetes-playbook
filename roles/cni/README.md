@@ -1,4 +1,4 @@
-# Deploy Weave CNI plugin
+# Deploy CNI plugin
 
 **Variables:**
 
