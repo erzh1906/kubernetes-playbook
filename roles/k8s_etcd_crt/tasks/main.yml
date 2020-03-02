@@ -6,11 +6,17 @@
   tags:
     - k8s_etcd_crt
 
+- name: Set etcd_dns
+  set_fact:
+    etcd_dns: "{{ groups[etcd_group_name] | map('extract', hostvars, ['ansible_nodename']) | list }}"
+  tags:
+    - k8s_etcd_crt
+
 - name: Set kube_etcd_san_dns
   set_fact:
     kube_etcd_san_dns: "{{ item.value | map('regex_replace', '^(.*)$', 'DNS:\\1') | list }}"
   with_dict:
-    etcd_dns_names: "{{ groups[etcd_group_name] }}"
+    etcd_dns_names: "{{ etcd_dns }}"
   tags:
     - k8s_etcd_crt
 

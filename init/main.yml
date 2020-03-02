@@ -1,6 +1,6 @@
 ---
 
 - name: Basic servers setup
-  hosts: "{{ groups[workers_group_name] + groups[masters_group_name] + groups[etcd_group_name]}}"
+  hosts: "{{ groups[workers_group_name] + groups[masters_group_name] + groups[etcd_group_name] }}"
   roles:
     - k8s_software
