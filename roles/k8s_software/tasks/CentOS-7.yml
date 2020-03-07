@@ -1,0 +1,35 @@
+---
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+  notify: reboot
+  tags:
+    - software
+
+- name: Remove firewalld package
+  yum:
+    name: firewalld
+    state: absent
+  tags:
+    - software
+
+- name: Install software
+  yum:
+    name:
+      - epel-release
+      - tmux
+      - vim
+      - curl
+      - wget
+      - bind-utils
+      - git
+      - bash-completion
+      - iotop
+      - strace
+      - psmisc
+      - python2-cryptography
+      - chrony
+    state: present
+  tags:
+    - software

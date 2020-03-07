@@ -1,0 +1,5 @@
+---
+
+- name: OS is not supported
+  debug:
+    msg: This OS is not supported

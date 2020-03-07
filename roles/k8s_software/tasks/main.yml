@@ -1,41 +1,26 @@
 ---
 
-- name: Disable SELinux
-  selinux:
-    state: disabled
-  notify: reboot
-  tags:
-    - software
+- name: Get package facts
+  package_facts:
+    manager: auto
 
-- name: Remove firewalld package
-  yum:
-    name: firewalld
-    state: absent
-  tags:
-    - software
+- name: Include OS specific tasks
+  include_tasks: "{{ item }}"
+  vars:
+    params:
+      files:
+        - '{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml'
+        - default.yml
+  loop: "{{ q('first_found', params, errors='ignore') }}"
 
-- name: Install basic software
-  yum:
-    name:
-      - epel-release
-      - tmux
-      - vim
-      - curl
-      - wget
-      - bind-utils
-      - git
-      - bash-completion
-      - iotop
-      - strace
-      - psmisc
-    state: present
-  tags:
-    - software
-
-- name: Install chrony
-  yum:
-    name: chrony
-    state: present
+- name: Create directories for certificates
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /etc/kubernetes/pki
+    - /etc/kubernetes/pki/etcd
   tags:
     - software
 
@@ -51,23 +36,5 @@
   timezone:
     name: Asia/Almaty
   notify: reboot
-  tags:
-    - software
-
-- name: Install python2-cryptography
-  yum:
-    name: python2-cryptography
-    state: present
-  tags:
-    - software
-
-- name: Create directories for certificates
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: 0755
-  loop:
-    - /etc/kubernetes/pki
-    - /etc/kubernetes/pki/etcd
   tags:
     - software
