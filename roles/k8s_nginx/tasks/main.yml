@@ -1,9 +1,13 @@
 ---
 
-- name: Add nginx repository
-  copy:
-    src: nginx.repo
-    dest: /etc/yum.repos.d/nginx.repo
+- name: Add Nginx repository
+  yum_repository:
+    name: nginx
+    description: "nginx repo"
+    file: nginx
+    baseurl: http://nginx.org/packages/centos/7/$basearch/
+    gpgcheck: no
+    enabled: yes
   tags:
     - nginx
 
