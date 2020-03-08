@@ -4,14 +4,39 @@
   package_facts:
     manager: auto
 
-- name: Include OS specific tasks
-  include_tasks: "{{ item }}"
-  vars:
-    params:
-      files:
-        - '{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml'
-        - default.yml
-  loop: "{{ q('first_found', params, errors='ignore') }}"
+- name: Disable SELinux
+  selinux:
+    state: disabled
+  notify: reboot
+  tags:
+    - software
+
+- name: Remove firewalld package
+  yum:
+    name: firewalld
+    state: absent
+  tags:
+    - software
+
+- name: Install software
+  yum:
+    name:
+      - epel-release
+      - tmux
+      - vim
+      - curl
+      - wget
+      - bind-utils
+      - git
+      - bash-completion
+      - iotop
+      - strace
+      - psmisc
+      - python2-cryptography
+      - chrony
+    state: present
+  tags:
+    - software
 
 - name: Create directories for certificates
   file:
