@@ -2,7 +2,7 @@
 
 - name: Upload Weave manifest
   template:
-    src: weave.yaml
+    src: weave-{{ weave_version.split('.')[:2] | join('.') }}.yaml
     dest: /root/weave.yaml
     backup: yes
   tags:
