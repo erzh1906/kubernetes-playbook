@@ -6,5 +6,5 @@ MarkupSafe==1.1.1
 netaddr==0.7.19
 pkg-resources==0.0.0
 pycparser==2.19
-PyYAML==5.3
+PyYAML==5.4
 six==1.14.0
